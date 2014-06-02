@@ -1,4 +1,4 @@
-Ext4.define('Kwf.Ext4.Controller.EditWindow', {
+Ext4.define('Kwf.Ext4.View.EditWindow', {
     extend: 'Ext.window.Window',
     layout: 'fit',
     border: false,

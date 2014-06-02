@@ -15,13 +15,22 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
 
     init: function()
     {
-        if (!this.gridController) Ext4.Error.raise('gridController config is required');
-        if (!(this.gridController instanceof Kwf.Ext4.Controller.Grid)) Ext4.Error.raise('gridController config needs to be a Kwf.Ext4.Controller.Grid');
+        if (!this.grid) Ext4.Error.raise('grid config is required');
+        if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext4.grid.Panel');
+        this.gridController = this.grid.getController();
+        if (!(this.gridController instanceof Kwf.Ext4.ViewController.Grid)) Ext4.Error.raise('gridController needs to be a Kwf.Ext4.ViewController.Grid');
 
         if (!this.bindable) Ext4.Error.raise('bindable config is required');
-        if (!(this.bindable instanceof Kwf.Ext4.Controller.Bindable.Abstract)) Ext4.Error.raise('bindable config needs to be a Kwf.Ext4.Controller.Bindable.Abstract');
+        if (!this.bindable.isBindableController) {
+            if (this.bindable.getController) {
+                this.bindable = this.bindable.getController();
+            }
+        }
+        if (!this.bindable.isBindableController) {
+            Ext4.Error.raise('bindable needs to implement Kwf.Ext4.Controller.Bindable.Interface');
+        }
 
-        var grid = this.gridController.grid;
+        var grid = this.gridController.view;
         var bindable = this.bindable;
         bindable.disable();
 
@@ -38,7 +47,7 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
                 var row = rows[0];
                 bindable.enable();
                 if (bindable.getLoadedRecord() !== row) {
-                    bindable.load(row);
+                    bindable.load(row, this.grid.getStore());
                 }
                 if (this.saveButton) this.saveButton.enable();
             } else {
@@ -108,13 +117,13 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
     {
         var curr = this.bindable.getLoadedRecord();
         if (curr) {
-            var newRow = this.gridController.grid.getStore().getById(curr.getId());
-            var selected = this.gridController.grid.getSelectionModel().isSelected(newRow);
+            var newRow = this.gridController.view.getStore().getById(curr.getId());
+            var selected = this.gridController.view.getSelectionModel().isSelected(newRow);
             //A refresh that loads the current row, a new object is created.
             //Load the new row, dirty values should be kept by the bindable
             if (newRow && newRow !== curr && selected) {
                 this.bindable.enable();
-                this.bindable.load(newRow);
+                this.bindable.load(newRow, this.grid.getStore());
             }
         }
     },
@@ -134,7 +143,7 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
 
 
         if (syncQueue) {
-            syncQueue.add(this.gridController.grid.getStore()); //sync this.gridController.grid store first
+            syncQueue.add(this.gridController.view.getStore()); //sync this.gridController.view store first
             this.bindable.save(syncQueue);         //then bindables (so bindable grid is synced second)
                                                    //bindable forms can still update the row as the sync is not yet started
             syncQueue.on('finished', function(syncQueue) {
@@ -146,7 +155,7 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
             }, this, { single: true });
         } else {
             this.bindable.save();                  //bindables first to allow form updating the row before sync
-            this.gridController.grid.getStore().sync({
+            this.gridController.view.getStore().sync({
                 success: function() {
                     this.fireEvent('savesuccess');
                     var rec = this.bindable.getLoadedRecord();

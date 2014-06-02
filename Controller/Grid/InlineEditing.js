@@ -1,4 +1,3 @@
-// @require Kwf.Ext4.Controller.Grid
 Ext4.define('Kwf.Ext4.Controller.Grid.InlineEditing', {
     mixins: {
         observable: 'Ext.util.Observable'
@@ -10,10 +9,15 @@ Ext4.define('Kwf.Ext4.Controller.Grid.InlineEditing', {
 
     init: function()
     {
-        if (!this.grid) Ext4.Error.raise('grid config is required');
-        if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext.grid.Panel');
+        if (!this.gridController) {
+            if (!this.grid) Ext4.Error.raise('grid or gridController config is required');
+            if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext4.grid.Panel');
+            this.gridController = this.grid.getController();
+        }
+        if (!this.gridController) Ext4.Error.raise('gridController config is required');
+        if (!(this.gridController instanceof Kwf.Ext4.ViewController.Grid)) Ext4.Error.raise('gridController config needs to be a Kwf.Ext4.ViewController.Grid');
 
-        var grid = this.grid;
+        var grid = this.gridController.view;
         if (typeof this.gridAddButton == 'undefined') this.gridAddButton = grid.down('button#add');
         if (this.gridAddButton && !(this.gridAddButton instanceof Ext4.button.Button)) Ext4.Error.raise('gridAddButton config needs to be a Ext.button.Button');
         if (typeof this.gridSaveButton == 'undefined') this.gridSaveButton = grid.down('button#save');

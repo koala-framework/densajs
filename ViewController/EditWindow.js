@@ -1,46 +1,57 @@
-Ext4.define('Kwf.Ext4.Controller.Binding.EditWindow', {
+Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
+    extend: 'Kwf.Ext4.ViewController.Abstract',
     mixins: {
         observable: 'Ext.util.Observable'
     },
     uses: [ 'Kwf.Ext4.Data.StoreSyncQueue' ],
+
     focusOnEditSelector: 'field',
-    editWindow: null,
     bindable: null,
+    autoSync: false,
 
     constructor: function(config) {
-        this.mixins.observable.constructor.call(this, config);
-        this.init();
+        this.mixins.observable.constructor.call(this);
+        this.callParent(arguments);
     },
+    optionalControl: {
 
+        saveButton: {
+            selector: '> toolbar > button#save',
+            listeners: {
+                click: 'onSave'
+            }
+        },
+
+        deleteButton: {
+            selector: '> toolbar > button#delete'
+        },
+
+        cancelButton: {
+            selector: '> toolbar > button#cancel',
+            listeners: {
+                click: 'onCancel'
+            }
+        }
+
+    },
     init: function()
     {
-        if (!this.editWindow) Ext4.Error.raise('editWindow config is required');
-        if (!(this.editWindow instanceof Ext4.window.Window)) Ext4.Error.raise('editWindow config needs to be a Ext.window.Window');
+        if (!this.view) Ext4.Error.raise('view is required');
+        if (!(this.view instanceof Ext4.window.Window)) Ext4.Error.raise('view needs to be a Ext.window.Window');
 
-        if (!this.saveButton) this.saveButton = this.editWindow.down('> toolbar > button#save');
-        if (this.saveButton && !(this.saveButton instanceof Ext4.button.Button)) Ext4.Error.raise('saveButton config needs to be a Ext.button.Button');
-
-        if (!this.deleteButton) this.deleteButton = this.editWindow.down('> toolbar > button#delete');
-        if (this.deleteButton && !(this.deleteButton instanceof Ext4.button.Button)) Ext4.Error.raise('deleteButton config needs to be a Ext.button.Button');
-
-        if (!this.cancelButton) this.cancelButton = this.editWindow.down('> toolbar > button#cancel');
-        if (this.cancelButton && !(this.cancelButton instanceof Ext4.button.Button)) Ext4.Error.raise('cancelButton config needs to be a Ext.button.Button');
-
+        if (!this.bindable) {
+            //by default (most common case) get form
+            this.bindable = this.view.down('> form');
+        }
         if (!this.bindable) Ext4.Error.raise('bindable config is required');
-        if (!(this.bindable instanceof Kwf.Ext4.Controller.Bindable.Abstract)) Ext4.Error.raise('bindable config needs to be a Kwf.Ext4.Controller.Bindable.Abstract');
-
-        if (this.saveButton) {
-            this.saveButton.on('click', function() {
-                if (this.doSave() !== false) {
-                    this.closeWindow();
-                }
-            }, this);
+        if (!this.bindable.isBindableController && this.bindable.getController) {
+            this.bindable = this.bindable.getController();
+        }
+        if (!this.bindable.isBindableController) {
+            Ext4.Error.raise('bindable config needs to be a Kwf.Ext4.Controller.Bindable.Interface');
         }
 
-        if (this.cancelButton) {
-            this.cancelButton.on('click', this.onCancel, this);
-        }
-        this.editWindow.on('beforeclose', function() {
+        this.view.on('beforeclose', function() {
             this.onCancel();
             return false;
         }, this);
@@ -50,15 +61,15 @@ Ext4.define('Kwf.Ext4.Controller.Binding.EditWindow', {
     openEditWindow: function(row, store)
     {
         this._loadedStore = store;
-        this.bindable.load(row);
         if (row.phantom) {
-            this.editWindow.setTitle(trlKwf('Add'));
+            this.view.setTitle(trlKwf('Add'));
         } else {
-            this.editWindow.setTitle(trlKwf('Edit'));
+            this.view.setTitle(trlKwf('Edit'));
         }
-        this.editWindow.show();
+        this.view.show();
+        this.bindable.load(row);
         if (this.focusOnEditSelector) {
-            this.editWindow.down(this.focusOnEditSelector).focus();
+            this.view.down(this.focusOnEditSelector).focus();
         }
     },
 
@@ -111,6 +122,13 @@ Ext4.define('Kwf.Ext4.Controller.Binding.EditWindow', {
         return true;
     },
 
+    onSave: function()
+    {
+        if (this.doSave() !== false) {
+            this.closeWindow();
+        }
+    },
+
     onCancel: function()
     {
         if (this.bindable.isDirty()) {
@@ -138,7 +156,7 @@ Ext4.define('Kwf.Ext4.Controller.Binding.EditWindow', {
     closeWindow: function()
     {
         this.bindable.reset();
-        this.editWindow.hide();
+        this.view.hide();
     }
 
 });

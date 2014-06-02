@@ -7,8 +7,10 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Grid', {
 
     init: function()
     {
-        if (!this.gridController) Ext4.Error.raise('gridController config is required');
-        if (!(this.gridController instanceof Kwf.Ext4.Controller.Grid)) Ext4.Error.raise('gridController config needs to be a Kwf.Ext4.Controller.Grid');
+        if (!this.grid) Ext4.Error.raise('grid config is required');
+        if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext4.grid.Panel');
+        this.gridController = this.grid.getController();
+        if (!(this.gridController instanceof Kwf.Ext4.ViewController.Grid)) Ext4.Error.raise('gridController needs to be a Kwf.Ext4.ViewController.Grid');
 
         if (!this.relation) Ext4.Error.raise('relation config is required');
 
@@ -18,7 +20,7 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Grid', {
         }
     },
 
-    load: function(row)
+    load: function(row, parentStore)
     {
         var storeName = this.relation+'Store'; //same naming as in Ext.data.association.HasMany
         if (this._loadedRecord && this._loadedRecord[storeName]) {
@@ -78,19 +80,19 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Grid', {
             }, this);
         }
 
-        this.gridController.grid.bindStore(store);
+        this.gridController.view.bindStore(store);
     },
 
     reset: function()
     {
         this._loadedRecord = null;
-        this.gridController.grid.bindStore(Ext4.StoreMgr.get('ext-empty-store'));
+        this.gridController.view.bindStore(Ext4.StoreMgr.get('ext-empty-store'));
     },
 
     isDirty: function()
     {
-        if (!this.gridController.grid.getStore()) return false;
-        return this.gridController.grid.getStore().getModifiedRecords().length || this.gridController.grid.getStore().getNewRecords().length;
+        if (!this.gridController.view.getStore()) return false;
+        return this.gridController.view.getStore().getModifiedRecords().length || this.gridController.view.getStore().getNewRecords().length;
     },
 
     isValid: function()
@@ -116,9 +118,9 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Grid', {
 
     save: function(syncQueue)
     {
-        if (this.gridController.grid.getStore()) {
+        if (this.gridController.view.getStore()) {
             if (syncQueue) {
-                syncQueue.add(this.gridController.grid.getStore());
+                syncQueue.add(this.gridController.view.getStore());
                 if (this.reloadRowOnSave) {
                     syncQueue.on('finished', function() {
                         this._reloadLoadedRow();
@@ -126,7 +128,7 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Grid', {
                     }, this, { single: true });
                 }
             } else {
-                this.gridController.grid.getStore().sync({
+                this.gridController.view.getStore().sync({
                     callback: function() {
                         if (this.reloadRowOnSave) {
                             this._reloadLoadedRow();
@@ -145,18 +147,18 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Grid', {
 
     enable: function()
     {
-        this.gridController.grid.enable();
+        this.gridController.view.enable();
     },
     disable: function()
     {
         this._loadedRecord = null;
-        var s = this.gridController.grid.store;
+        var s = this.gridController.view.store;
         if (s) {
-            this.gridController.grid.bindStore(Ext4.create('Ext.data.Store', {
+            this.gridController.view.bindStore(Ext4.create('Ext.data.Store', {
                 model: s.model
             }));
         }
-        this.gridController.grid.disable();
+        this.gridController.view.disable();
     },
     getPanel: function()
     {

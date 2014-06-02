@@ -1,4 +1,3 @@
-// @require Kwf.Ext4.Controller.Grid
 Ext4.define('Kwf.Ext4.Controller.Grid.DragDropOrder', {
     mixins: {
         observable: 'Ext.util.Observable'
@@ -11,14 +10,19 @@ Ext4.define('Kwf.Ext4.Controller.Grid.DragDropOrder', {
 
     init: function()
     {
+        if (!this.gridController) {
+            if (!this.grid) Ext4.Error.raise('grid or gridController config is required');
+            if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext4.grid.Panel');
+            this.gridController = this.grid.getController();
+        }
         if (!this.gridController) Ext4.Error.raise('gridController config is required');
-        if (!(this.gridController instanceof Kwf.Ext4.Controller.Grid)) Ext4.Error.raise('gridController config needs to be a Kwf.Ext4.Controller.Grid');
+        if (!(this.gridController instanceof Kwf.Ext4.ViewController.Grid)) Ext4.Error.raise('gridController config needs to be a Kwf.Ext4.ViewController.Grid');
 
-        var plugin = this.gridController.grid.view.findPlugin('gridviewdragdrop');
+        var plugin = this.gridController.view.view.findPlugin('gridviewdragdrop');
         if (!plugin) Ext4.Error.raise('Didn\'t find gridviewdragdrop plugin in grid view');
-        this.gridController.grid.view.on('drop', function(node, data, overRow, dropPosition, eOpts) {
+        this.gridController.view.view.on('drop', function(node, data, overRow, dropPosition, eOpts) {
             var pos = 1;
-            this.gridController.grid.getStore().each(function(i) {
+            this.gridController.view.getStore().each(function(i) {
                 if (data.records[0] == i) {
                     //skip
                     return;
@@ -34,7 +38,7 @@ Ext4.define('Kwf.Ext4.Controller.Grid.DragDropOrder', {
                 pos++;
             }, this);
             if (this.autoSync) {
-                this.gridController.grid.getStore().sync();
+                this.gridController.view.getStore().sync();
             }
         }, this);
     }

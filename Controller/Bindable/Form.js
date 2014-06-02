@@ -2,49 +2,40 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Form', {
     extend: 'Kwf.Ext4.Controller.Bindable.Abstract',
 
     formController: null,
-    updateOnChange: false,
-    focusOnAddSelector: 'field',
 
     constructor: function()
     {
         this.callParent(arguments);
 
-        if (!this.formController) Ext4.Error.raise('formController config is required');
-        if (!(this.formController instanceof Kwf.Ext4.Controller.Form)) Ext4.Error.raise('formController config needs to be a Kwf.Ext4.Controller.Form');
+        if (this.updateOnChange) Ext4.Error.raise('updateOnChange config moved to Controller.Form');
+        if (this.focusOnAddSelector) Ext4.Error.raise('updateOnChange config moved to Controller.Form');
 
-        this.formController.form.getForm().trackResetOnLoad = true;
-
-        if (this.updateOnChange) {
-            Ext4.each(this.formController.form.query('field'), function(i) {
-                i.on('change', function() {
-                    this.formController.form.updateRecord();
-                }, this);
-            }, this);
+        if (!this.formController) {
+            if (!this.form) Ext4.Error.raise('form or formController config is required');
+            this.formController = this.form.getController();
         }
+        if (!this.formController) Ext4.Error.raise('formController config is required');
+        if (!(this.formController instanceof Kwf.Ext4.ViewController.Form)) Ext4.Error.raise('formController config needs to be a Kwf.Ext4.ViewController.Form');
     },
 
-    load: function(row)
+    load: function(row, store)
     {
-        if (this.formController.form.isDisabled()) {
-            Ext4.Error.raise('Can\'t load into disabled form');
-        }
-        this.formController.load(row);
+        this.formController.load(row, store);
     },
 
     reset: function()
     {
-        this.formController.form.getForm().reset(true);
+        this.formController.reset();
     },
 
     isDirty: function()
     {
-        if (this.updateOnChange) return false;
-        return this.formController.form.getForm().isDirty();
+        return this.formController.isDirty();
     },
 
     isValid: function()
     {
-        return this.formController.form.getForm().isValid();
+        return this.formController.isValid();
     },
 
     save: function(syncQueue)
@@ -59,27 +50,19 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Form', {
 
     enable: function()
     {
-        this.formController.form.enable();
+        this.formController.enable();
     },
     disable: function()
     {
-        this.formController.form.getForm()._record = null;
-        Ext4.each(this.formController.form.query('field'), function(i) {
-            i.setValue(null);
-            i.resetOriginalValue();
-        }, this);
-        this.formController.form.disable();
+        this.formController.disable();
     },
     getPanel: function()
     {
-        return this.form;
+        return this.formController.view;
     },
 
     onAdd: function()
     {
-        if (this.focusOnAddSelector) {
-            this.formController.form.down(this.focusOnAddSelector).focus();
-            return true;
-        }
+        this.formController.onAdd();
     }
 });

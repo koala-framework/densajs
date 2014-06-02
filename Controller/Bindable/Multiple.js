@@ -10,12 +10,17 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Multiple', {
         if (!this.items) Ext4.Error.raise('items config is required');
         if (!(this.items instanceof Array)) Ext4.Error.raise('items config needs to be an array');
         if (this.items.length < 1) Ext4.Error.raise('items config length needs to be >0');
+        for (var i=0; i<this.items.length; i++) {
+            if (!(this.items[i] instanceof Kwf.Ext4.Controller.Bindable.Interface)) {
+                this.items[i] = this.items[i].getController();
+            }
+        }
     },
 
-    load: function(row)
+    load: function(row, store)
     {
         Ext4.each(this.items, function(i) {
-            i.load(row);
+            i.load(row, store);
         }, this);
     },
 

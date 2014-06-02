@@ -1,4 +1,5 @@
-Ext4.define('Kwf.Ext4.Controller.Grid', {
+Ext4.define('Kwf.Ext4.ViewController.Grid', {
+    extend: 'Kwf.Ext4.ViewController.Abstract',
     mixins: {
         observable: 'Ext.util.Observable'
     },
@@ -10,29 +11,32 @@ Ext4.define('Kwf.Ext4.Controller.Grid', {
     grid: null,
 
     _store: null,
+
     constructor: function(config) {
-        this.mixins.observable.constructor.call(this, config);
-        this.init();
+        this.mixins.observable.constructor.call(this);
+        this.callParent(arguments);
+    },
+
+    optionalControl: {
+
+        exportCsv: {
+            click: 'onCsvExport'
+        },
+
+        deleteButton: {
+            selector: 'button#delete',
+            listeners: {
+                click: 'onDeleteClick'
+            }
+        }
+
     },
 
     init: function()
     {
-        if (!this.grid) Ext4.Error.raise('grid config is required');
-        if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext.grid.Panel');
-        var grid = this.grid;
-
-        if (typeof this.deleteButton == 'undefined') this.deleteButton = grid.down('button#delete');
-        if (this.deleteButton && !(this.deleteButton instanceof Ext4.button.Button)) Ext4.Error.raise('deleteButton config needs to be a Ext.button.Button');
-        if (this.deleteButton) {
-            this.deleteButton.disable();
-            this.deleteButton.on('click', this.onDeleteClick, this);
-        }
-
-        if (typeof this.exportCsvButton == 'undefined') this.exportCsvButton = grid.down('button#exportCsv');
-        if (this.exportCsvButton && !(this.exportCsvButton instanceof Ext4.button.Button)) Ext4.Error.raise('exportCsvButton config needs to be a Ext.button.Button');
-        if (this.exportCsvButton) {
-            this.exportCsvButton.on('click', this.csvExport, this);
-        }
+        if (!this.view) Ext4.Error.raise('view config is required');
+        if (!(this.view instanceof Ext4.grid.Panel)) Ext4.Error.raise('view config needs to be a Ext.grid.Panel');
+        var grid = this.view;
 
         grid.on('selectionchange', function(model, rows) {
             if (rows[0]) {
@@ -46,9 +50,9 @@ Ext4.define('Kwf.Ext4.Controller.Grid', {
             field.on('change', function() {
                 var filterId = 'filter-'+field.getName();
                 var v = field.getValue();
-                var filter = this.grid.getStore().filters.get(filterId);
+                var filter = this.view.getStore().filters.get(filterId);
                 if (!filter || filter.value != v) {
-                    this.grid.getStore().addFilter({
+                    this.view.getStore().addFilter({
                         id: filterId,
                         property: field.getName(),
                         value: v
@@ -61,8 +65,9 @@ Ext4.define('Kwf.Ext4.Controller.Grid', {
         Ext4.Function.interceptAfter(grid, "bindStore", this.onBindStore, this);
 
         if (this.autoLoad) {
-            this.grid.getStore().load();
+            this.view.getStore().load();
         }
+
     },
 
     onDeleteClick: function(options)
@@ -88,9 +93,9 @@ Ext4.define('Kwf.Ext4.Controller.Grid', {
 
     deleteSelected: function()
     {
-        this.grid.getStore().remove(this.grid.getSelectionModel().getSelection());
+        this.view.getStore().remove(this.view.getSelectionModel().getSelection());
         if (this.autoSync) {
-            this.grid.getStore().sync({
+            this.view.getStore().sync({
                 success: function() {
                     this.fireEvent('savesuccess');
                 },
@@ -102,16 +107,16 @@ Ext4.define('Kwf.Ext4.Controller.Grid', {
 
     onBindStore: function()
     {
-        var s = this.grid.getStore();
+        var s = this.view.getStore();
         this._store = s;
-        Ext4.each(this.grid.query('pagingtoolbar'), function(i) {
+        Ext4.each(this.view.query('pagingtoolbar'), function(i) {
             i.bindStore(s);
         }, this);
-        Ext4.each(this.grid.query('> toolbar[dock=top] field'), function(field) {
+        Ext4.each(this.view.query('> toolbar[dock=top] field'), function(field) {
             var filterId = 'filter-'+field.getName();
             var v = field.getValue();
             if (typeof v == 'undefined') v = null;
-            this.grid.getStore().addFilter({
+            this.view.getStore().addFilter({
                 id: filterId,
                 property: field.getName(),
                 value: v
@@ -121,13 +126,13 @@ Ext4.define('Kwf.Ext4.Controller.Grid', {
         this.fireEvent('bindstore', s);
     },
 
-    csvExport: function()
+    onCsvExport: function()
     {
         var csv = '';
 
         //header
         var sep = '';
-        Ext4.each(this.grid.columns, function(col) {
+        Ext4.each(this.view.columns, function(col) {
             if (!col.dataIndex) return;
             csv += sep+col.text;
             sep = ';';
@@ -180,7 +185,7 @@ Ext4.define('Kwf.Ext4.Controller.Grid', {
         {
             store.each(function(row) {
                 var sep = '';
-                Ext4.each(this.grid.columns, function(col) {
+                Ext4.each(this.view.columns, function(col) {
                     if (!col.dataIndex) return;
                     var val = row.get(col.dataIndex);
                     if (col.renderer) {
@@ -201,7 +206,7 @@ Ext4.define('Kwf.Ext4.Controller.Grid', {
             var URL = window.URL || window.webkiURL;
             var blob = new Blob([csv]);
             var blobURL = URL.createObjectURL(blob);
-            var a = this.grid.el.createChild({
+            var a = this.view.el.createChild({
                 tag: 'a',
                 href: blobURL,
                 style: 'display:none;',
