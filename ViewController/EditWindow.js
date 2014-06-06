@@ -1,18 +1,11 @@
 Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
     extend: 'Kwf.Ext4.ViewController.Abstract',
-    mixins: {
-        observable: 'Ext.util.Observable'
-    },
     uses: [ 'Kwf.Ext4.Data.StoreSyncQueue' ],
 
     focusOnEditSelector: 'field',
     bindable: null,
     autoSync: false,
 
-    constructor: function(config) {
-        this.mixins.observable.constructor.call(this);
-        this.callParent(arguments);
-    },
     optionalControl: {
 
         saveButton: {
@@ -101,7 +94,7 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
                                                   //bindable forms can still update the row as the sync is not yet started
                 syncQueue.start({
                     success: function() {
-                        this.fireEvent('savesuccess');
+                        this.fireViewEvent('savesuccess');
                     },
                     scope: this
                 });
@@ -109,7 +102,7 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
                 this.bindable.save();
                 this.bindable.getLoadedRecord().save({
                     callback: function(records, operation, success) {
-                        if (success) this.fireEvent('savesuccess');
+                        if (success) this.fireViewEvent('savesuccess');
                     },
                     scope: this
                 });
@@ -117,7 +110,7 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
         } else {
             this.bindable.save();
         }
-        this.fireEvent('save');
+        this.fireViewEvent('save');
 
         return true;
     },

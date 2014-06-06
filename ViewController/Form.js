@@ -2,7 +2,6 @@ Ext4.define('Kwf.Ext4.ViewController.Form', {
     extend: 'Kwf.Ext4.ViewController.Abstract',
 
     mixins: {
-        observable: 'Ext.util.Observable',
         bindable: 'Kwf.Ext4.Controller.Bindable.Interface'
     },
 
@@ -12,11 +11,6 @@ Ext4.define('Kwf.Ext4.ViewController.Form', {
 
     autoSync: true,
     deleteConfirmText: trlKwf('Do you really wish to remove this entry?'),
-
-    constructor: function(config) {
-        this.mixins.observable.constructor.call(this);
-        this.callParent(arguments);
-    },
 
     optionalControl: {
 
@@ -157,7 +151,7 @@ Ext4.define('Kwf.Ext4.ViewController.Form', {
 
         this.getLoadedRecord().save({
             success: function() {
-                this.fireEvent('savesuccess', this.getLoadedRecord());
+                this.fireViewEvent('savesuccess', this.getLoadedRecord());
                 this.load(this.getLoadedRecord());
                 if (options && options.success) {
                     options.success.call(options.scope || this);

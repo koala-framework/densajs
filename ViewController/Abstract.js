@@ -24,5 +24,22 @@ Ext4.define('Kwf.Ext4.ViewController.Abstract', {
             }
         }
         this.callParent(arguments);
+    },
+
+    /**
+     * Fires an event on the view. See {@link Ext.Component#fireEvent}.
+     * @param {String} eventName The name of the event to fire.
+     * @param {Object...} args Variable number of parameters are passed to handlers.
+     * @return {Boolean} returns false if any of the handlers return false otherwise it returns true.
+     * @protected
+     */
+    fireViewEvent: function(eventName) {
+        var view = this.view,
+            result = false;
+
+        if (view) {
+            result = view.fireEvent.apply(view, arguments);
+        }
+        return result;
     }
 });

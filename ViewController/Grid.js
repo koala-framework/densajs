@@ -1,8 +1,5 @@
 Ext4.define('Kwf.Ext4.ViewController.Grid', {
     extend: 'Kwf.Ext4.ViewController.Abstract',
-    mixins: {
-        observable: 'Ext.util.Observable'
-    },
     uses: [ 'Ext.window.MessageBox' ],
     autoSync: true,
     autoLoad: false,
@@ -11,11 +8,6 @@ Ext4.define('Kwf.Ext4.ViewController.Grid', {
     grid: null,
 
     _store: null,
-
-    constructor: function(config) {
-        this.mixins.observable.constructor.call(this);
-        this.callParent(arguments);
-    },
 
     optionalControl: {
 
@@ -97,11 +89,11 @@ Ext4.define('Kwf.Ext4.ViewController.Grid', {
         if (this.autoSync) {
             this.view.getStore().sync({
                 success: function() {
-                    this.fireEvent('savesuccess');
+                    this.fireViewEvent('savesuccess');
                 },
                 scope: this
             });
-            this.fireEvent('save');
+            this.fireViewEvent('save');
         }
     },
 
@@ -123,7 +115,7 @@ Ext4.define('Kwf.Ext4.ViewController.Grid', {
             }, false);
         }, this);
 
-        this.fireEvent('bindstore', s);
+        this.fireViewEvent('bindstore', s);
     },
 
     onCsvExport: function()
