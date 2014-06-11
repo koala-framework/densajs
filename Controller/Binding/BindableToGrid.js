@@ -17,6 +17,7 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
     {
         if (!this.grid) Ext4.Error.raise('grid config is required');
         if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext4.grid.Panel');
+        if (!this.grid.getController) Ext4.Error.raise('grid has no controller');
         this.gridController = this.grid.getController();
         if (!(this.gridController instanceof Kwf.Ext4.ViewController.Grid)) Ext4.Error.raise('gridController needs to be a Kwf.Ext4.ViewController.Grid');
 
@@ -84,7 +85,7 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
             }
         }, this);
 
-        this.gridController.on('bindstore', this.onBindStore, this);
+        this.gridController.view.on('bindstore', this.onBindStore, this);
         if (grid.getStore()) this.onBindStore(grid.getStore());
 
         if (this.saveButton) {

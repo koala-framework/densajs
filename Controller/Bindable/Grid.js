@@ -16,7 +16,7 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Grid', {
 
         if (this.reloadRowOnSave) {
             //savesuccess is fired by gridController on sync after delete
-            this.gridController.on('savesuccess', this._reloadLoadedRow, this);
+            this.gridController.view.on('savesuccess', this._reloadLoadedRow, this);
         }
     },
 

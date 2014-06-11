@@ -11,8 +11,11 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Multiple', {
         if (!(this.items instanceof Array)) Ext4.Error.raise('items config needs to be an array');
         if (this.items.length < 1) Ext4.Error.raise('items config length needs to be >0');
         for (var i=0; i<this.items.length; i++) {
-            if (!(this.items[i] instanceof Kwf.Ext4.Controller.Bindable.Interface)) {
+            if (!this.items[i].isBindableController) {
                 this.items[i] = this.items[i].getController();
+            }
+            if (!this.items[i].isBindableController) {
+                Ext4.Error.raise('item is not a bindableController');
             }
         }
     },
