@@ -15,46 +15,83 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
         if (!this.bindable.isBindableController) {
             Ext4.Error.raise('bindable needs to implement Kwf.Ext4.Controller.Bindable.Interface');
         }
+        if (this._disableOnInit) {
+            delete this._disableOnInit;
+            this.disable();
+        }
+        if (this._loadOnInit) {
+            this.load.apply(this, this._loadOnInit);
+            delete this._loadOnInit;
+        }
     },
 
     //store is optional, used for sync
     load: function(row, store)
     {
-        return this.bindable.load(row, store);
+        if (this.bindable) {
+            return this.bindable.load(row, store);
+        } else {
+            this._loadOnInit = [row, store];
+        }
     },
 
     save: function(syncQueue)
     {
-        return this.bindable.save(syncQueue);
+        if (this.bindable) {
+            return this.bindable.save(syncQueue);
+        }
     },
 
     getLoadedRecord: function()
     {
-        return this.bindable.getLoadedRecord();
+        if (this.bindable) {
+            return this.bindable.getLoadedRecord();
+        } else if (this._loadOnInit) {
+            return this._loadOnInit[0];
+        }
+        return null
     },
 
     reset: function()
     {
-        return this.bindable.reset();
+        if (this.bindable) {
+            return this.bindable.reset();
+        }
     },
 
     isDirty: function()
     {
-        return this.bindable.isDirty();
+        if (this.bindable) {
+            return this.bindable.isDirty();
+        } else {
+            return false;
+        }
     },
 
     isValid: function()
     {
-        return this.bindable.isDirty();
+        if (this.bindable) {
+            return this.bindable.isValid();
+        } else {
+            return true;
+        }
     },
 
     enable: function()
     {
-        return this.bindable.enable();
+        if (this.bindable) {
+            return this.bindable.enable();
+        } else {
+            this._disableOnInit = false;
+        }
     },
     disable: function()
     {
-        return this.bindable.disable();
+        if (this.bindable) {
+            return this.bindable.disable();
+        } else {
+            this._disableOnInit = true;
+        }
     },
     getPanel: function()
     {
@@ -63,6 +100,8 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
 
     onAdd: function()
     {
-        return this.bindable.onAdd();
+        if (this.bindable) {
+            return this.bindable.onAdd();
+        }
     }
 });
