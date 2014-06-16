@@ -148,8 +148,8 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
 
     closeWindow: function()
     {
-        this.bindable.reset();
         this.view.hide();
+        this.bindable.reset();
     },
 
     getLoadedRecord: function()
