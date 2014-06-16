@@ -150,6 +150,15 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
     {
         this.bindable.reset();
         this.view.hide();
+    },
+
+    getLoadedRecord: function()
+    {
+        if (this.bindable) {
+            return this.bindable.getLoadedRecord();
+        } else {
+            return null;
+        }
     }
 
 });
