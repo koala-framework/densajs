@@ -42,17 +42,6 @@ Ext4.define('Kwf.Ext4.Controller.Grid.EditWindow', {
         if (!this.editActionColumn) this.editActionColumn = this.gridController.view.down('actioncolumn#edit')
         if (this.editActionColumn && !(this.editActionColumn instanceof Ext4.grid.column.Column)) Ext4.Error.raise('editActionColumn config needs to be a Ext.grid.column.Column');
 
-        if (this.editWindowController.deleteButton) {
-            this.editWindowController.deleteButton.on('click', function() {
-                this.gridController.onDeleteClick({
-                    callback: function() {
-                        this.editWindowController.closeWindow();
-                    },
-                    scope: this
-                });
-            }, this);
-        }
-
         this.gridController.view.on('celldblclick', function(grid, td, cellIndex, row, tr, rowIndex, e) {
             this.openEditWindow(row);
         }, this);

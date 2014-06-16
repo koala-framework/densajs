@@ -6,23 +6,28 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
     bindable: null,
     autoSync: false,
 
+    deleteConfirmText: trlKwf('Do you really wish to remove this entry?'),
+
     optionalControl: {
 
         saveButton: {
             selector: '> toolbar > button#save',
             listeners: {
-                click: 'onSave'
+                click: 'onSaveClick'
             }
         },
 
         deleteButton: {
-            selector: '> toolbar > button#delete'
+            selector: '> toolbar > button#delete',
+            listeners: {
+                click: 'onDeleteClick'
+            }
         },
 
         cancelButton: {
             selector: '> toolbar > button#cancel',
             listeners: {
-                click: 'onCancel'
+                click: 'onCancelClick'
             }
         }
 
@@ -45,7 +50,7 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
         }
 
         this.view.on('beforeclose', function() {
-            this.onCancel();
+            this.onCancelClick();
             return false;
         }, this);
     },
@@ -115,14 +120,14 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
         return true;
     },
 
-    onSave: function()
+    onSaveClick: function()
     {
         if (this.doSave() !== false) {
             this.closeWindow();
         }
     },
 
-    onCancel: function()
+    onCancelClick: function()
     {
         if (this.bindable.isDirty()) {
             Ext4.Msg.show({
@@ -158,6 +163,35 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
             return this.bindable.getLoadedRecord();
         } else {
             return null;
+        }
+    },
+
+    onDeleteClick: function()
+    {
+        if (this.autoSync) {
+            Ext4.Msg.show({
+                title: trlKwf('Delete'),
+                msg: this.deleteConfirmText,
+                buttons: Ext4.Msg.YESNO,
+                scope: this,
+                fn: function(button) {
+                    if (button == 'yes') {
+                        if (this._loadedStore) {
+                            this._loadedStore.remove(this.getLoadedRecord());
+                            this._loadedStore.sync();
+                        } else {
+                            this.getLoadedRecord().destory();
+                        }
+                        this.closeWindow();
+                    }
+                }
+            });
+        } else {
+            if (!this._loadedStore) {
+                Ext4.Error.raise("Can't delete record without store");
+            }
+            this._loadedStore.remove(this.getLoadedRecord());
+            this.closeWindow();
         }
     }
 
