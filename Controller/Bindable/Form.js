@@ -64,5 +64,15 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Form', {
     onAdd: function()
     {
         this.formController.onAdd();
+    },
+
+    allowSave: function()
+    {
+        return this.formController.allowSave();
+    },
+
+    allowDelete: function()
+    {
+        return this.formController.allowDelete();
     }
 });

@@ -30,12 +30,13 @@ Ext4.define('Kwf.Ext4.ViewController.Grid', {
         if (!(this.view instanceof Ext4.grid.Panel)) Ext4.Error.raise('view config needs to be a Ext.grid.Panel');
         var grid = this.view;
 
+        if (this.getDeleteButton) this.getDeleteButton().disable();
         grid.on('selectionchange', function(model, rows) {
             if (rows[0]) {
                 var row = rows[0];
-                if (this.deleteButton) this.deleteButton.enable();
+                if (this.getDeleteButton) this.getDeleteButton().enable();
             } else {
-                if (this.deleteButton) this.deleteButton.disable();
+                if (this.getDeleteButton) this.getDeleteButton().disable();
             }
         }, this);
         Ext4.each(grid.query('> toolbar[dock=top] field'), function(field) {

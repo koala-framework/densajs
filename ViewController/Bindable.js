@@ -4,6 +4,29 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
     mixins: {
         bindable: 'Kwf.Ext4.Controller.Bindable.Interface'
     },
+
+    autoSync: true,
+    deleteConfirmText: trlKwf('Do you really wish to remove this entry?'),
+
+    _loadedStore: null,
+
+    optionalControl: {
+
+        saveButton: {
+            selector: '> toolbar > button#save',
+            listeners: {
+                click: 'onSaveClick'
+            }
+        },
+        deleteButton: {
+            selector: '> toolbar > button#delete',
+            listeners: {
+                click: 'onDeleteClick'
+            }
+        }
+
+    },
+
     init: function()
     {
         if (!this.bindable) {
@@ -23,12 +46,17 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
             this.load.apply(this, this._loadOnInit);
             delete this._loadOnInit;
         }
+        if (this.getSaveButton) this.getSaveButton().disable();
+        if (this.getDeleteButton) this.getDeleteButton().disable();
     },
 
     //store is optional, used for sync
     load: function(row, store)
     {
         if (this.bindable) {
+            this._loadedStore = store;
+            if (this.getSaveButton) this.getSaveButton().enable();
+            if (this.getDeleteButton) this.getDeleteButton().enable();
             return this.bindable.load(row, store);
         } else {
             this._loadOnInit = [row, store];
@@ -88,6 +116,8 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
     disable: function()
     {
         if (this.bindable) {
+            if (this.getSaveButton) this.getSaveButton().disable();
+            if (this.getDeleteButton) this.getDeleteButton().disable();
             return this.bindable.disable();
         } else {
             this._disableOnInit = true;
@@ -103,5 +133,106 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
         if (this.bindable) {
             return this.bindable.onAdd();
         }
+    },
+
+    allowSave: function()
+    {
+        if (this.bindable) {
+            return this.bindable.allowSave();
+        } else {
+            return this.mixins.bindable.allowSave.call(this);
+        }
+    },
+
+    allowDelete: function()
+    {
+        if (this.bindable) {
+            return this.bindable.allowDelete();
+        } else {
+            return this.mixins.bindable.allowDelete.call(this);
+        }
+    },
+
+    onSaveClick: function()
+    {
+        var submitDeferred = new Deft.promise.Deferred;
+        var ret = this.allowSave().then({
+            success: function() {
+                var syncQueue = new Kwf.Ext4.Data.StoreSyncQueue();
+                this.save(syncQueue);
+                if (this.autoSync) {
+                    syncQueue.add(this._loadedStore);
+                }
+                syncQueue.start({
+                    success: function() {
+                        submitDeferred.resolve();
+                    },
+                    failure: function() {
+                        submitDeferred.reject();
+                    }
+                });
+            },
+            failure: function() {
+                submitDeferred.reject();
+            },
+            scope: this
+        });
+        ret.submitPromise = submitDeferred.promise;
+        return ret;
+    },
+
+    onDeleteClick: function()
+    {
+        var submitDeferred = new Deft.promise.Deferred;
+        var ret = this.allowDelete().then({
+            success: function() {
+                if (this.autoSync) {
+                     Ext4.Msg.show({
+                        title: trlKwf('Delete'),
+                        msg: this.deleteConfirmText,
+                        buttons: Ext4.Msg.YESNO,
+                        scope: this,
+                        fn: function(button) {
+                            if (button == 'yes') {
+                                if (this._loadedStore) {
+                                    this._loadedStore.remove(this.getLoadedRecord());
+                                    var syncQueue = new Kwf.Ext4.Data.StoreSyncQueue();
+                                    syncQueue.add(this._loadedStore);
+                                    syncQueue.start({
+                                        success: function() {
+                                            submitDeferred.resolve();
+                                        },
+                                        failure: function() {
+                                            submitDeferred.reject();
+                                        }
+                                    });
+                                } else {
+                                    this.getLoadedRecord().destory({
+                                        success: function() {
+                                            submitDeferred.resolve();
+                                        },
+                                        failure: function() {
+                                            submitDeferred.reject();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    if (this._loadedStore) {
+                        this._loadedStore.remove(this.getLoadedRecord());
+                    } else {
+                        Ext4.Error.raise("Can't delete if autoSync is disabled and store was not provided");
+                    }
+                }
+            },
+            failure: function() {
+                submitDeferred.reject();
+            },
+            scope: this
+        });
+        ret.submitPromise = submitDeferred.promise;
+        return ret;
     }
 });

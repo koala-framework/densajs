@@ -35,13 +35,8 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
         var bindable = this.bindable;
         bindable.disable();
 
-        if (!this.saveButton && bindable.getPanel()) this.saveButton = bindable.getPanel().down('button#save');
-        if (this.saveButton && !(this.saveButton instanceof Ext4.button.Button)) Ext4.Error.raise('saveButton config needs to be a Ext.button.Button');
-
         if (!this.addButton) this.addButton = grid.down('button#add');
         if (this.addButton && !(this.addButton instanceof Ext4.button.Button)) Ext4.Error.raise('addButton config needs to be a Ext.button.Button');
-
-        if (this.saveButton) this.saveButton.disable();
 
         grid.on('selectionchange', function(model, rows) {
             if (rows[0]) {
@@ -66,13 +61,17 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
                     scope: this,
                     fn: function(button) {
                         if (button == 'yes') {
-                            if (this.save()) {
-                                bindable.reset();
-                                grid.getSelectionModel().select(record);
-                            } else {
-                                //validation failed re-select
-                                grid.getSelectionModel().select(bindable.getLoadedRecord());
-                            }
+                            this.save().then({
+                                success: function() {
+                                    bindable.reset();
+                                    grid.getSelectionModel().select(record);
+                                },
+                                failure: function() {
+                                    //validation failed re-select
+                                    grid.getSelectionModel().select(bindable.getLoadedRecord());
+                                },
+                                scope: this
+                            });
                         } else if (button == 'no') {
                             bindable.reset();
                             grid.getSelectionModel().select(record);
@@ -88,14 +87,6 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
         this.gridController.view.on('bindstore', this.onBindStore, this);
         if (grid.getStore()) this.onBindStore(grid.getStore());
 
-        if (this.saveButton) {
-            this.saveButton.on('click', function() {
-                var syncQueue = new Kwf.Ext4.Data.StoreSyncQueue();
-                this.save(syncQueue);
-                syncQueue.start();
-
-            }, this);
-        }
         if (this.addButton) {
             this.addButton.on('click', function() {
                 if (!bindable.isValid()) {
@@ -136,39 +127,34 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
 
     save: function(syncQueue)
     {
-        if (!this.bindable.isValid()) {
-            Ext4.Msg.alert(trlKwf('Save'),
-                trlKwf("Can't save, please fill all red underlined fields correctly."));
-            return false;
-        }
-
-
-        if (syncQueue) {
-            syncQueue.add(this.gridController.view.getStore()); //sync this.gridController.view store first
-            this.bindable.save(syncQueue);         //then bindables (so bindable grid is synced second)
-                                                   //bindable forms can still update the row as the sync is not yet started
-            syncQueue.on('finished', function(syncQueue) {
-                if (!syncQueue.hasException) {
-                    this.fireEvent('savesuccess');
-                    var rec = this.bindable.getLoadedRecord();
-                    if (rec) this.bindable.load(rec);
+        return this.bindable.allowSave().then({
+            success: function() {
+                if (syncQueue) {
+                    syncQueue.add(this.gridController.view.getStore()); //sync this.gridController.view store first
+                    this.bindable.save(syncQueue);         //then bindables (so bindable grid is synced second)
+                                                        //bindable forms can still update the row as the sync is not yet started
+                    syncQueue.on('finished', function(syncQueue) {
+                        if (!syncQueue.hasException) {
+                            this.fireEvent('savesuccess');
+                            var rec = this.bindable.getLoadedRecord();
+                            if (rec) this.bindable.load(rec, this.grid.getStore());
+                        }
+                    }, this, { single: true });
+                } else {
+                    this.bindable.save();                  //bindables first to allow form updating the row before sync
+                    this.gridController.view.getStore().sync({
+                        success: function() {
+                            this.fireEvent('savesuccess');
+                            var rec = this.bindable.getLoadedRecord();
+                            if (rec) this.bindable.load(rec, this.grid.getStore());
+                        },
+                        scope: this
+                    });
                 }
-            }, this, { single: true });
-        } else {
-            this.bindable.save();                  //bindables first to allow form updating the row before sync
-            this.gridController.view.getStore().sync({
-                success: function() {
-                    this.fireEvent('savesuccess');
-                    var rec = this.bindable.getLoadedRecord();
-                    if (rec) this.bindable.load(rec);
-                },
-                scope: this
-            });
-        }
-
-        this.fireEvent('save');
-
-        return true;
+                this.fireEvent('save');
+            },
+            scope: this
+        });
     },
 
     isValid: function()

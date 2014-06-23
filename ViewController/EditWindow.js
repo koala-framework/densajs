@@ -78,53 +78,55 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
 
     doSave: function()
     {
-        if (!this.bindable.isValid()) {
-            Ext4.Msg.alert(trlKwf('Save'),
-                trlKwf("Can't save, please fill all red underlined fields correctly."));
-            return false;
-        }
+        return this.bindable.allowSave().then({
+            success: function() {
 
-        var row = this.bindable.getLoadedRecord();
-        if (row.phantom && this._loadedStore
-            && this._loadedStore.indexOf(row) == -1
-        ) {
-            this._loadedStore.add(row);
-        }
+                var row = this.bindable.getLoadedRecord();
+                if (row.phantom && this._loadedStore
+                    && this._loadedStore.indexOf(row) == -1
+                ) {
+                    this._loadedStore.add(row);
+                }
 
-        if (this.autoSync) {
-            if (this._loadedStore) {
-                var syncQueue = new Kwf.Ext4.Data.StoreSyncQueue();
-                syncQueue.add(this._loadedStore); //sync store first
-                this.bindable.save(syncQueue);    //then bindables (so bindable grid is synced second)
-                                                  //bindable forms can still update the row as the sync is not yet started
-                syncQueue.start({
-                    success: function() {
-                        this.fireViewEvent('savesuccess');
-                    },
-                    scope: this
-                });
-            } else {
-                this.bindable.save();
-                this.bindable.getLoadedRecord().save({
-                    callback: function(records, operation, success) {
-                        if (success) this.fireViewEvent('savesuccess');
-                    },
-                    scope: this
-                });
-            }
-        } else {
-            this.bindable.save();
-        }
-        this.fireViewEvent('save');
+                if (this.autoSync) {
+                    if (this._loadedStore) {
+                        var syncQueue = new Kwf.Ext4.Data.StoreSyncQueue();
+                        syncQueue.add(this._loadedStore); //sync store first
+                        this.bindable.save(syncQueue);    //then bindables (so bindable grid is synced second)
+                                                        //bindable forms can still update the row as the sync is not yet started
+                        syncQueue.start({
+                            success: function() {
+                                this.fireViewEvent('savesuccess');
+                            },
+                            scope: this
+                        });
+                    } else {
+                        this.bindable.save();
+                        this.bindable.getLoadedRecord().save({
+                            callback: function(records, operation, success) {
+                                if (success) this.fireViewEvent('savesuccess');
+                            },
+                            scope: this
+                        });
+                    }
+                } else {
+                    this.bindable.save();
+                }
+                this.fireViewEvent('save');
 
-        return true;
+            },
+            scope: this
+        });
     },
 
     onSaveClick: function()
     {
-        if (this.doSave() !== false) {
-            this.closeWindow();
-        }
+        this.doSave().then({
+            success: function() {
+                this.closeWindow();
+            },
+            scope: this
+        });
     },
 
     onCancelClick: function()
@@ -139,9 +141,12 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
                     if (btn == 'no') {
                         this.closeWindow();
                     } else if (btn == 'yes') {
-                        if (this.doSave() !== false) {
-                            this.closeWindow();
-                        }
+                        this.doSave().then({
+                            success: function() {
+                                this.closeWindow();
+                            },
+                            scope: this
+                        });
                     }
                 },
                 scope: this
@@ -168,31 +173,36 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
 
     onDeleteClick: function()
     {
-        if (this.autoSync) {
-            Ext4.Msg.show({
-                title: trlKwf('Delete'),
-                msg: this.deleteConfirmText,
-                buttons: Ext4.Msg.YESNO,
-                scope: this,
-                fn: function(button) {
-                    if (button == 'yes') {
-                        if (this._loadedStore) {
-                            this._loadedStore.remove(this.getLoadedRecord());
-                            this._loadedStore.sync();
-                        } else {
-                            this.getLoadedRecord().destory();
+        this.bindable.allowDelete().then({
+            success: function() {
+                if (this.autoSync) {
+                    Ext4.Msg.show({
+                        title: trlKwf('Delete'),
+                        msg: this.deleteConfirmText,
+                        buttons: Ext4.Msg.YESNO,
+                        scope: this,
+                        fn: function(button) {
+                            if (button == 'yes') {
+                                if (this._loadedStore) {
+                                    this._loadedStore.remove(this.getLoadedRecord());
+                                    this._loadedStore.sync();
+                                } else {
+                                    this.getLoadedRecord().destory();
+                                }
+                                this.closeWindow();
+                            }
                         }
-                        this.closeWindow();
+                    });
+                } else {
+                    if (!this._loadedStore) {
+                        Ext4.Error.raise("Can't delete record without store");
                     }
+                    this._loadedStore.remove(this.getLoadedRecord());
+                    this.closeWindow();
                 }
-            });
-        } else {
-            if (!this._loadedStore) {
-                Ext4.Error.raise("Can't delete record without store");
-            }
-            this._loadedStore.remove(this.getLoadedRecord());
-            this.closeWindow();
-        }
+            },
+            scope: this
+        });
     }
 
 });

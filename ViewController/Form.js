@@ -90,81 +90,83 @@ Ext4.define('Kwf.Ext4.ViewController.Form', {
 
     onSaveClick: function()
     {
-        if (!this.view.getForm().isValid()) {
-            Ext4.Msg.alert(trlKwf('Save'),
-                trlKwf("Can't save, please fill all red underlined fields correctly."));
-            return false;
-        }
-
-        if (this._loadedStore) {
-            this.save();
-            if (this.autoSync) {
-                this._loadedStore.sync();
-            }
-        } else {
-            if (this.autoSync) {
-                this.validateAndSubmit();
-            } else {
-                Ext4.Error.raise("Can't save if autoSync is disabled and store was not provided");
-            }
-        }
-    },
-    onDeleteClick: function()
-    {
-        if (this.autoSync) {
-            Ext4.Msg.show({
-                title: trlKwf('Delete'),
-                msg: this.deleteConfirmText,
-                buttons: Ext4.Msg.YESNO,
-                scope: this,
-                fn: function(button) {
-                    if (button == 'yes') {
-                        if (this._loadedStore) {
-                            this._loadedStore.remove(this.getLoadedRecord());
-                            this._loadedStore.sync();
-                        } else {
-                            this.getLoadedRecord().destory();
-                            this.disable();
-                        }
-                    }
-                }
-            });
-        } else {
-            if (this._loadedStore) {
-                this._loadedStore.remove(this.getLoadedRecord());
-            } else {
-                Ext4.Error.raise("Can't delete if autoSync is disabled and store was not provided");
-            }
-        }
-
-    },
-
-    validateAndSubmit: function(options)
-    {
-        if (!this.view.getForm().isValid()) {
-            Ext4.Msg.alert(trlKwf('Save'),
-                trlKwf("Can't save, please fill all red underlined fields correctly."));
-            return false;
-        }
-
-        this.save();
-
-        this.getLoadedRecord().save({
+        this.allowSave().then({
             success: function() {
-                this.fireViewEvent('savesuccess', this.getLoadedRecord());
-                this.load(this.getLoadedRecord());
-                if (options && options.success) {
-                    options.success.call(options.scope || this);
-                }
-            },
-            failure: function() {
-                if (options && options.failure) {
-                    options.failure.call(options.scope || this);
+                if (this._loadedStore) {
+                    this.save();
+                    if (this.autoSync) {
+                        this._loadedStore.sync();
+                    }
+                } else {
+                    if (this.autoSync) {
+                        this.validateAndSubmit();
+                    } else {
+                        Ext4.Error.raise("Can't save if autoSync is disabled and store was not provided");
+                    }
                 }
             },
             scope: this
         });
-        return true;
+    },
+    onDeleteClick: function()
+    {
+        this.allowDelete().then({
+            success: function() {
+                if (this.autoSync) {
+                    Ext4.Msg.show({
+                        title: trlKwf('Delete'),
+                        msg: this.deleteConfirmText,
+                        buttons: Ext4.Msg.YESNO,
+                        scope: this,
+                        fn: function(button) {
+                            if (button == 'yes') {
+                                if (this._loadedStore) {
+                                    this._loadedStore.remove(this.getLoadedRecord());
+                                    this._loadedStore.sync();
+                                } else {
+                                    this.getLoadedRecord().destory();
+                                    this.disable();
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    if (this._loadedStore) {
+                        this._loadedStore.remove(this.getLoadedRecord());
+                    } else {
+                        Ext4.Error.raise("Can't delete if autoSync is disabled and store was not provided");
+                    }
+                }
+            },
+            scope: this
+        });
+    },
+
+    validateAndSubmit: function(options)
+    {
+        return this.allowSave().then({
+            success: function() {
+
+                this.save();
+
+                this.getLoadedRecord().save({
+                    success: function() {
+                        this.fireViewEvent('savesuccess', this.getLoadedRecord());
+                        this.load(this.getLoadedRecord());
+                        if (options && options.success) {
+                            options.success.call(options.scope || this);
+                        }
+                    },
+                    failure: function() {
+                        if (options && options.failure) {
+                            options.failure.call(options.scope || this);
+                        }
+                    },
+                    scope: this
+                });
+            },
+            scope: this
+        });
     },
 
     save: function(syncQueue)
@@ -227,5 +229,15 @@ Ext4.define('Kwf.Ext4.ViewController.Form', {
             this.view.down(this.focusOnAddSelector).focus();
             return true;
         }
+    },
+
+    allowSave: function()
+    {
+        if (!this.isValid()) {
+            Ext4.Msg.alert(trlKwf('Save'),
+                trlKwf("Can't save, please fill all red underlined fields correctly."));
+            return Deft.promise.Deferred.reject();
+        }
+        return this.mixins.bindable.allowSave.call(this);
     }
 });

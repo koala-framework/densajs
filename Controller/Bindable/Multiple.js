@@ -98,5 +98,27 @@ Ext4.define('Kwf.Ext4.Controller.Bindable.Multiple', {
             }
         }, this);
         return ret;
+    },
+
+    allowDelete: function()
+    {
+        var ret = this.callParent(arguments);
+        Ext4.each(this.items, function(i) {
+            ret = ret.then(function() {
+                i.allowDelete()
+            });
+        }, this);
+        return ret;
+    },
+
+    allowSave: function()
+    {
+        var ret = this.callParent(arguments);
+        Ext4.each(this.items, function(i) {
+            ret = ret.then(function() {
+                i.allowSave()
+            });
+        }, this);
+        return ret;
     }
 });
