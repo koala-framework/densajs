@@ -2,7 +2,7 @@
     padding-left: 20px;
 }
 .kwf-boundlist-checkbox .x4-boundlist-item:before {
-    background-image: url("/assets/ext4/resources/ext-theme-neptune/images/form/checkbox.png");
+    background-image: url("/assets/ext/resources/ext-theme-neptune/images/form/checkbox.png");
     content: "";
     display: block;
     height: 16px; width: 16px;
