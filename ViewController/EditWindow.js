@@ -65,7 +65,7 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
             this.view.setTitle(trlKwf('Edit'));
         }
         this.view.show();
-        this.bindable.load(row);
+        this.bindable.load(row, store);
         if (this.focusOnEditSelector) {
             this.view.down(this.focusOnEditSelector).focus();
         }
