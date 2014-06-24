@@ -96,7 +96,7 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
                 var s = grid.getStore();
                 var row = s.model.create();
                 s.add(row);
-                this.fireEvent('add', row);
+                this.bindable.view.fireEvent('add', row);
 
                 grid.getSelectionModel().select(row);
                 bindable.onAdd(row);
@@ -135,19 +135,19 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
                                                         //bindable forms can still update the row as the sync is not yet started
                     syncQueue.on('finished', function(syncQueue) {
                         if (!syncQueue.hasException) {
-                            this.fireEvent('savesuccess');
+                            this.bindable.view.fireEvent('savesuccess');
                         }
                     }, this, { single: true });
                 } else {
                     this.bindable.save();                  //bindables first to allow form updating the row before sync
                     this.gridController.view.getStore().sync({
                         success: function() {
-                            this.fireEvent('savesuccess');
+                            this.bindable.view.fireEvent('savesuccess');
                         },
                         scope: this
                     });
                 }
-                this.fireEvent('save');
+                this.bindable.view.fireEvent('save');
             },
             scope: this
         });

@@ -104,7 +104,12 @@ Ext4.define('Kwf.Ext4.ViewController.Form', {
                 if (this._loadedStore) {
                     this.save();
                     if (this.autoSync) {
-                        this._loadedStore.sync();
+                        this._loadedStore.sync({
+                            success: function() {
+                                this.fireViewEvent('savesuccess');
+                            },
+                            scope: this
+                        });
                     }
                 } else {
                     if (this.autoSync) {

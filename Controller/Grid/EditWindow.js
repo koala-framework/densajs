@@ -58,6 +58,9 @@ Ext4.define('Kwf.Ext4.Controller.Grid.EditWindow', {
                 this.openEditWindow(row);
             }, this);
         }
+        this.editWindowController.view.on('savesuccess', function() {
+            this.gridController.view.fireEvent('savesuccess');
+        }, this);
     },
     openEditWindow: function(row)
     {

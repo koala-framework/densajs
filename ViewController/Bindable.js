@@ -173,10 +173,12 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
                 syncQueue.start({
                     success: function() {
                         submitDeferred.resolve();
+                        this.fireViewEvent('savesuccess');
                     },
                     failure: function() {
                         submitDeferred.reject();
-                    }
+                    },
+                    scope: this
                 });
             },
             failure: function() {
