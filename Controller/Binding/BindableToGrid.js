@@ -45,10 +45,8 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
                 if (bindable.getLoadedRecord() !== row) {
                     bindable.load(row, this.grid.getStore());
                 }
-                if (this.saveButton) this.saveButton.enable();
             } else {
                 bindable.disable();
-                if (this.saveButton) this.saveButton.disable();
             }
         }, this);
 
@@ -61,7 +59,7 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
                     scope: this,
                     fn: function(button) {
                         if (button == 'yes') {
-                            this.save().then({
+                            this.doSave().then({
                                 success: function() {
                                     bindable.reset();
                                     grid.getSelectionModel().select(record);
@@ -125,32 +123,37 @@ Ext4.define('Kwf.Ext4.Controller.Binding.BindableToGrid', {
         store.on('refresh', this.onRefreshStore, this);
     },
 
-    save: function(syncQueue)
+    doSave: function()
     {
         return this.bindable.allowSave().then({
             success: function() {
-                if (syncQueue) {
-                    syncQueue.add(this.gridController.view.getStore()); //sync this.gridController.view store first
-                    this.bindable.save(syncQueue);         //then bindables (so bindable grid is synced second)
-                                                        //bindable forms can still update the row as the sync is not yet started
-                    syncQueue.on('finished', function(syncQueue) {
-                        if (!syncQueue.hasException) {
-                            this.bindable.view.fireEvent('savesuccess');
-                        }
-                    }, this, { single: true });
-                } else {
-                    this.bindable.save();                  //bindables first to allow form updating the row before sync
-                    this.gridController.view.getStore().sync({
-                        success: function() {
-                            this.bindable.view.fireEvent('savesuccess');
-                        },
-                        scope: this
-                    });
-                }
-                this.bindable.view.fireEvent('save');
+                this.save();
             },
             scope: this
         });
+    },
+
+    save: function(syncQueue)
+    {
+        if (syncQueue) {
+            syncQueue.add(this.gridController.view.getStore()); //sync this.gridController.view store first
+            this.bindable.save(syncQueue);         //then bindables (so bindable grid is synced second)
+                                                //bindable forms can still update the row as the sync is not yet started
+            syncQueue.on('finished', function(syncQueue) {
+                if (!syncQueue.hasException) {
+                    this.bindable.view.fireEvent('savesuccess');
+                }
+            }, this, { single: true });
+        } else {
+            this.bindable.save();                  //bindables first to allow form updating the row before sync
+            this.gridController.view.getStore().sync({
+                success: function() {
+                    this.bindable.view.fireEvent('savesuccess');
+                },
+                scope: this
+            });
+        }
+        this.bindable.view.fireEvent('save');
     },
 
     isValid: function()
