@@ -50,11 +50,17 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
         if (this.getDeleteButton) this.getDeleteButton().disable();
     },
 
+    _onStoreWrite: function()
+    {
+    },
+
     //store is optional, used for sync
     load: function(row, store)
     {
         if (this.bindable) {
+            if (this._loadedStore) this._loadedStore.un('write', this._onStoreWrite, this);
             this._loadedStore = store;
+            if (this._loadedStore) this._loadedStore.on('write', this._onStoreWrite, this);
             if (this.getSaveButton) this.getSaveButton().enable();
             if (this.getDeleteButton) this.getDeleteButton().enable();
             return this.bindable.load(row, store);

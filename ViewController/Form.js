@@ -45,13 +45,22 @@ Ext4.define('Kwf.Ext4.ViewController.Form', {
         }
     },
 
+    _onStoreWrite: function()
+    {
+        if (this.getLoadedRecord()) {
+            this.load(this.getLoadedRecord(), this._loadedStore);
+        }
+    },
+
     //store is optional, used for sync
     load: function(row, store)
     {
         if (this.view.isDisabled()) {
             Ext4.Error.raise('Can\'t load into disabled form');
         }
+        if (this._loadedStore) this._loadedStore.un('write', this._onStoreWrite, this);
         this._loadedStore = store;
+        if (this._loadedStore) this._loadedStore.on('write', this._onStoreWrite, this);
 
         if (this.autoLoadComboBoxStores) {
             Ext4.each(this.view.query("combobox"), function(i) {
@@ -152,7 +161,10 @@ Ext4.define('Kwf.Ext4.ViewController.Form', {
                 this.getLoadedRecord().save({
                     success: function() {
                         this.fireViewEvent('savesuccess', this.getLoadedRecord());
-                        this.load(this.getLoadedRecord());
+                        if (!this._loadedStore) {
+                            //if we don't have a store we can't listen to 'write' event
+                            this.load(this.getLoadedRecord());
+                        }
                         if (options && options.success) {
                             options.success.call(options.scope || this);
                         }
