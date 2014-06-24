@@ -165,10 +165,11 @@ Ext4.define('Kwf.Ext4.ViewController.Bindable', {
         var ret = this.allowSave().then({
             success: function() {
                 var syncQueue = new Kwf.Ext4.Data.StoreSyncQueue();
-                this.save(syncQueue);
                 if (this.autoSync) {
-                    syncQueue.add(this._loadedStore);
+                    syncQueue.add(this._loadedStore); //sync store first
                 }
+                this.save(syncQueue);    //then bindables (so bindable grid is synced second)
+                                         //bindable forms can still update the row as the sync is not yet started
                 syncQueue.start({
                     success: function() {
                         submitDeferred.resolve();
