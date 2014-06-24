@@ -139,6 +139,9 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
                 buttons: Ext4.Msg.YESNOCANCEL,
                 fn: function(btn) {
                     if (btn == 'no') {
+                        if (this._loadedStore && this.getLoadedRecord().phantom) {
+                            this._loadedStore.remove(this.getLoadedRecord());
+                        }
                         this.closeWindow();
                     } else if (btn == 'yes') {
                         this.doSave().then({
@@ -152,6 +155,9 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
                 scope: this
             });
         } else {
+            if (this._loadedStore && this.getLoadedRecord().phantom) {
+                this._loadedStore.remove(this.getLoadedRecord());
+            }
             this.closeWindow();
         }
     },
