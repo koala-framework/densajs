@@ -4,7 +4,7 @@ Ext4.define('Kwf.Ext4.ViewController.EditWindow', {
 
     focusOnEditSelector: 'field',
     bindable: null,
-    autoSync: false,
+    autoSync: true,
 
     deleteConfirmText: trlKwf('Do you really wish to remove this entry?'),
 
