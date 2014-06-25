@@ -1,0 +1,10 @@
+{
+    "name": "koala-framework/extjs-addons",
+    "description": "Koala Framework ExtJS Addons",
+    "homepage": "http://www.koala-framework.org/",
+    "license": "BSD-2-Clause",
+    "require": {
+        "koala-framework/library-extjs": "4.2.*",
+        "koala-framework/library-deftjs": "0.9.*"
+    }
+}
