@@ -1,6 +1,6 @@
 {
-    "name": "koala-framework/extjs-addons",
-    "description": "Koala Framework ExtJS Addons",
+    "name": "koala-framework/densajs",
+    "description": "DensaJS ExtJS Addons",
     "homepage": "http://www.koala-framework.org/",
     "license": "BSD-2-Clause",
     "require": {
