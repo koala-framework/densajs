@@ -4,6 +4,10 @@ Ext4.define('Densa.grid.controller.Bind', {
     },
     requires: [ 'Densa.data.StoreSyncQueue' ],
 
+    saveChangesTitle: 'Save',
+    saveChangesMsg: 'Do you want to save the changes?',
+
+
     gridController: null,
     bindable: null,
 
@@ -53,8 +57,8 @@ Ext4.define('Densa.grid.controller.Bind', {
         grid.on('beforeselect', function(sm, record) {
             if (bindable.getLoadedRecord() !== record && bindable.isDirty()) {
                 Ext4.Msg.show({
-                    title: trlKwf('Save'),
-                    msg: trlKwf('Do you want to save the changes?'),
+                    title: this.saveChangesTitle,
+                    msg: this.saveChangesMsg,
                     buttons: Ext4.Msg.YESNOCANCEL,
                     scope: this,
                     fn: function(button) {

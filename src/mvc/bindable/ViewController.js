@@ -6,7 +6,8 @@ Ext4.define('Densa.mvc.bindable.ViewController', {
     },
 
     autoSync: true,
-    deleteConfirmText: trlKwf('Do you really wish to remove this entry?'),
+    deleteConfirmTitle: 'Delete',
+    deleteConfirmText: 'Do you really wish to remove this entry?',
 
     _loadedStore: null,
 
@@ -197,7 +198,7 @@ Ext4.define('Densa.mvc.bindable.ViewController', {
             success: function() {
                 if (this.autoSync) {
                      Ext4.Msg.show({
-                        title: trlKwf('Delete'),
+                        title: this.deleteConfirmTitle,
                         msg: this.deleteConfirmText,
                         buttons: Ext4.Msg.YESNO,
                         scope: this,

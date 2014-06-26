@@ -10,7 +10,10 @@ Ext4.define('Densa.form.PanelController', {
     autoLoadComboBoxStores: true,
 
     autoSync: true,
-    deleteConfirmText: trlKwf('Do you really wish to remove this entry?'),
+    deleteConfirmText: 'Do you really wish to remove this entry?',
+    deleteConfirmTitle: 'Delete',
+    saveValidateErrorTitle: 'Save',
+    saveValidateErrorMsg: "Can't save, please fill all red underlined fields correctly."
 
     optionalControl: {
 
@@ -128,7 +131,7 @@ Ext4.define('Densa.form.PanelController', {
             success: function() {
                 if (this.autoSync) {
                     Ext4.Msg.show({
-                        title: trlKwf('Delete'),
+                        title: this.deleteConfirmTitle,
                         msg: this.deleteConfirmText,
                         buttons: Ext4.Msg.YESNO,
                         scope: this,
@@ -251,8 +254,7 @@ Ext4.define('Densa.form.PanelController', {
     allowSave: function()
     {
         if (!this.isValid()) {
-            Ext4.Msg.alert(trlKwf('Save'),
-                trlKwf("Can't save, please fill all red underlined fields correctly."));
+            Ext4.Msg.alert(this.saveValidateErrorTitle, this.saveValidateErrorMsg);
             return Deft.promise.Deferred.reject();
         }
         return this.mixins.bindable.allowSave.call(this);

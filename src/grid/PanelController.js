@@ -3,7 +3,10 @@ Ext4.define('Densa.grid.PanelController', {
     uses: [ 'Ext.window.MessageBox' ],
     autoSync: true,
     autoLoad: false,
-    deleteConfirmText: trlKwf('Do you really wish to remove this entry?'),
+    deleteConfirmTitle: 'Delete',
+    deleteConfirmText: 'Do you really wish to remove this entry?',
+    exportProgressTitle: 'Export',
+    exportProgressMsg: 'Exporting rows...',
 
     grid: null,
 
@@ -67,7 +70,7 @@ Ext4.define('Densa.grid.PanelController', {
     {
         if (this.autoSync) {
             Ext4.Msg.show({
-                title: trlKwf('Delete'),
+                title: this.deleteConfirmTitle,
                 msg: this.deleteConfirmText,
                 buttons: Ext4.Msg.YESNO,
                 scope: this,
@@ -147,8 +150,8 @@ Ext4.define('Densa.grid.PanelController', {
         });
 
         Ext4.Msg.show({
-            title: trlKwf('Export'),
-            msg: trlKwf('Exporting rows...'),
+            title: this.exportProgressTitle,
+            msg: this.exportProgressMsg,
             progress: true,
             buttons: Ext4.Msg.CANCEL
         });

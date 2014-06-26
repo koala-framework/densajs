@@ -1,11 +1,12 @@
 Ext4.define('Densa.overrides.ComboBox', {
     override: 'Ext.form.field.ComboBox',
     showNoSelection: false,
+    defaultEmptyText: 'no selection',
 
     initComponent: function()
     {
         if (this.showNoSelection && !this.emptyText) {
-            this.emptyText = '('+trlKwf('no selection')+')';
+            this.emptyText = '('+this.defaultEmptyText+')';
         }
         this.callParent(arguments);
     },

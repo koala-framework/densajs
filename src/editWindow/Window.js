@@ -10,8 +10,10 @@ Ext4.define('Densa.editWindow.Window', {
     showSave: true,
     showDelete: false,
     constrainHeader: true,
-    saveText: trlKwf('Save'),
-    deleteText: trlKwf('Delete'),
+    saveText: 'Save',
+    deleteText: 'Delete',
+    cancelText: 'Cancel',
+    closeText: 'Close',
     padding: 10,
     initComponent: function() {
         this.bbar = [];
@@ -29,7 +31,7 @@ Ext4.define('Densa.editWindow.Window', {
             });
         }
         this.bbar.push({
-            text: this.showSave ? trlKwf('Cancel') : trlKwf('Close'),
+            text: this.showSave ? this.cancelText : this.closeText,
             itemId: 'cancel'
         });
         this.callParent(arguments);

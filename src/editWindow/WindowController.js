@@ -6,7 +6,12 @@ Ext4.define('Densa.editWindow.WindowController', {
     bindable: null,
     autoSync: true,
 
-    deleteConfirmText: trlKwf('Do you really wish to remove this entry?'),
+    deleteConfirmText: 'Do you really wish to remove this entry?',
+    deleteConfirmTitle: 'Delete',
+    addTitle: 'Add',
+    editTitle: 'Edit',
+    saveChangesTitle: 'Save',
+    saveChangesMsg: 'Do you want to save the changes?',
 
     optionalControl: {
 
@@ -60,9 +65,9 @@ Ext4.define('Densa.editWindow.WindowController', {
     {
         this._loadedStore = store;
         if (row.phantom) {
-            this.view.setTitle(trlKwf('Add'));
+            this.view.setTitle(this.addTitle);
         } else {
-            this.view.setTitle(trlKwf('Edit'));
+            this.view.setTitle(this.editTitle);
         }
         this.view.show();
         this.bindable.load(row, store);
@@ -133,8 +138,8 @@ Ext4.define('Densa.editWindow.WindowController', {
     {
         if (this.bindable.isDirty()) {
             Ext4.Msg.show({
-                title: trlKwf('Save'),
-                msg: trlKwf('Do you want to save the changes?'),
+                title: this.saveChangesTitle,
+                msg: this.saveChangesMsg,
                 icon: Ext4.MessageBox.QUESTION,
                 buttons: Ext4.Msg.YESNOCANCEL,
                 fn: function(btn) {
@@ -183,7 +188,7 @@ Ext4.define('Densa.editWindow.WindowController', {
             success: function() {
                 if (this.autoSync) {
                     Ext4.Msg.show({
-                        title: trlKwf('Delete'),
+                        title: this.deleteConfirmTitle,
                         msg: this.deleteConfirmText,
                         buttons: Ext4.Msg.YESNO,
                         scope: this,
