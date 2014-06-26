@@ -13,7 +13,7 @@ Ext.define('Densa.form.PanelController', {
     deleteConfirmText: 'Do you really wish to remove this entry?',
     deleteConfirmTitle: 'Delete',
     saveValidateErrorTitle: 'Save',
-    saveValidateErrorMsg: "Can't save, please fill all red underlined fields correctly."
+    saveValidateErrorMsg: "Can't save, please fill all red underlined fields correctly.",
 
     optionalControl: {
 
