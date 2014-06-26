@@ -1,4 +1,4 @@
-Ext4.define('Densa.mvc.bindable.Multiple', {
+Ext.define('Densa.mvc.bindable.Multiple', {
     extend: 'Densa.mvc.bindable.Abstract',
 
     items: null,
@@ -6,30 +6,30 @@ Ext4.define('Densa.mvc.bindable.Multiple', {
 
     init: function()
     {
-        if (this.panel && !(this.panel instanceof Ext4.panel.Panel)) Ext4.Error.raise('panel config needs to be a Ext.panel.Panel');
-        if (!this.items) Ext4.Error.raise('items config is required');
-        if (!(this.items instanceof Array)) Ext4.Error.raise('items config needs to be an array');
-        if (this.items.length < 1) Ext4.Error.raise('items config length needs to be >0');
+        if (this.panel && !(this.panel instanceof Ext.panel.Panel)) Ext.Error.raise('panel config needs to be a Ext.panel.Panel');
+        if (!this.items) Ext.Error.raise('items config is required');
+        if (!(this.items instanceof Array)) Ext.Error.raise('items config needs to be an array');
+        if (this.items.length < 1) Ext.Error.raise('items config length needs to be >0');
         for (var i=0; i<this.items.length; i++) {
             if (!this.items[i].isBindableController) {
                 this.items[i] = this.items[i].getController();
             }
             if (!this.items[i].isBindableController) {
-                Ext4.Error.raise('item is not a bindableController');
+                Ext.Error.raise('item is not a bindableController');
             }
         }
     },
 
     load: function(row, store)
     {
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             i.load(row, store);
         }, this);
     },
 
     reset: function()
     {
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             i.reset();
         }, this);
     },
@@ -37,7 +37,7 @@ Ext4.define('Densa.mvc.bindable.Multiple', {
     isDirty: function()
     {
         var ret = false;
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             if (i.isDirty()) {
                 ret = true;
                 return false;
@@ -49,7 +49,7 @@ Ext4.define('Densa.mvc.bindable.Multiple', {
     isValid: function()
     {
         var ret = true;
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             if (!i.isValid()) {
                 ret = false;
                 return false;
@@ -60,7 +60,7 @@ Ext4.define('Densa.mvc.bindable.Multiple', {
 
     save: function(syncQueue)
     {
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             i.save(syncQueue);
         }, this);
     },
@@ -73,14 +73,14 @@ Ext4.define('Densa.mvc.bindable.Multiple', {
     enable: function()
     {
         if (this.panel) this.panel.enable();
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             i.enable();
         }, this);
     },
     disable: function()
     {
         if (this.panel) this.panel.disable();
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             i.disable();
         }, this);
     },
@@ -91,7 +91,7 @@ Ext4.define('Densa.mvc.bindable.Multiple', {
     onAdd: function()
     {
         var ret = false;
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             if (i.onAdd()) {
                 ret = true;
                 return false;
@@ -103,7 +103,7 @@ Ext4.define('Densa.mvc.bindable.Multiple', {
     allowDelete: function()
     {
         var ret = this.callParent(arguments);
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             ret = ret.then(function() {
                 i.allowDelete()
             });
@@ -114,7 +114,7 @@ Ext4.define('Densa.mvc.bindable.Multiple', {
     allowSave: function()
     {
         var ret = this.callParent(arguments);
-        Ext4.each(this.items, function(i) {
+        Ext.each(this.items, function(i) {
             ret = ret.then(function() {
                 i.allowSave()
             });

@@ -1,4 +1,4 @@
-Ext4.define('Densa.data.StoreSyncQueue', {
+Ext.define('Densa.data.StoreSyncQueue', {
     mixins: {
         observable: 'Ext.util.Observable'
     },
@@ -62,7 +62,7 @@ Ext4.define('Densa.data.StoreSyncQueue', {
 
         if (hasException) {
             if (qo.failure) qo.failure.call(qo.scope || this, batch, qo);
-            this.exceptions = Ext4.Array.merge(this.exceptions, batch.exceptions);
+            this.exceptions = Ext.Array.merge(this.exceptions, batch.exceptions);
             this.hasException = true;
         } else {
             if (qo.success) qo.success.call(qo.scope || this, batch, qo);

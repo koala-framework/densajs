@@ -1,4 +1,4 @@
-Ext4.define('Densa.mvc.bindable.Grid', {
+Ext.define('Densa.mvc.bindable.Grid', {
     extend: 'Densa.mvc.bindable.Abstract',
 
     relation: null,
@@ -7,12 +7,12 @@ Ext4.define('Densa.mvc.bindable.Grid', {
 
     init: function()
     {
-        if (!this.grid) Ext4.Error.raise('grid config is required');
-        if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext4.grid.Panel');
+        if (!this.grid) Ext.Error.raise('grid config is required');
+        if (!(this.grid instanceof Ext.grid.Panel)) Ext.Error.raise('grid config needs to be a Ext.grid.Panel');
         this.gridController = this.grid.getController();
-        if (!(this.gridController instanceof Densa.grid.PanelController)) Ext4.Error.raise('gridController needs to be a Densa.grid.PanelController');
+        if (!(this.gridController instanceof Densa.grid.PanelController)) Ext.Error.raise('gridController needs to be a Densa.grid.PanelController');
 
-        if (!this.relation) Ext4.Error.raise('relation config is required');
+        if (!this.relation) Ext.Error.raise('relation config is required');
 
         if (this.reloadRowOnSave) {
             //savesuccess is fired by gridController on sync after delete
@@ -44,9 +44,9 @@ Ext4.define('Densa.mvc.bindable.Grid', {
         //that way both share the same object
         var belongsToAssoc;
         store.model.prototype.associations.each(function(assoc) {
-            if (assoc instanceof Ext4.data.association.BelongsTo) {
-                Ext4.ClassManager.get(assoc.model).prototype.associations.each(function(i) {
-                    if (i instanceof Ext4.data.association.HasMany
+            if (assoc instanceof Ext.data.association.BelongsTo) {
+                Ext.ClassManager.get(assoc.model).prototype.associations.each(function(i) {
+                    if (i instanceof Ext.data.association.HasMany
                         && i.model == store.model.$className
                         && i.foreignKey == assoc.foreignKey
                     ) {
@@ -58,15 +58,15 @@ Ext4.define('Densa.mvc.bindable.Grid', {
         }, this);
         if (belongsToAssoc) {
             if (!store['belongsTo'+belongsToAssoc.instanceName]) {
-                store.loadRecords = Ext4.Function.createInterceptor(store.loadRecords, function(records) {
+                store.loadRecords = Ext.Function.createInterceptor(store.loadRecords, function(records) {
                     var store = this;
                     for (var i=0; i < records.length; i++) {
                         records[i][belongsToAssoc.instanceName] = store['belongsTo'+belongsToAssoc.instanceName];
                     }
                 });
-                store.insert = Ext4.Function.createInterceptor(store.insert, function(index, records) {
+                store.insert = Ext.Function.createInterceptor(store.insert, function(index, records) {
                     var store = this;
-                    if (!Ext4.isIterable(records)) {
+                    if (!Ext.isIterable(records)) {
                         records = [records];
                     }
                     for (var i=0; i < records.length; i++) {
@@ -86,7 +86,7 @@ Ext4.define('Densa.mvc.bindable.Grid', {
     reset: function()
     {
         this._loadedRecord = null;
-        this.gridController.view.bindStore(Ext4.StoreMgr.get('ext-empty-store'));
+        this.gridController.view.bindStore(Ext.StoreMgr.get('ext-empty-store'));
     },
 
     isDirty: function()
@@ -154,7 +154,7 @@ Ext4.define('Densa.mvc.bindable.Grid', {
         this._loadedRecord = null;
         var s = this.gridController.view.store;
         if (s) {
-            this.gridController.view.bindStore(Ext4.create('Ext.data.Store', {
+            this.gridController.view.bindStore(Ext.create('Ext.data.Store', {
                 model: s.model
             }));
         }

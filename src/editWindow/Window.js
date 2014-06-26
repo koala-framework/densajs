@@ -1,4 +1,4 @@
-Ext4.define('Densa.editWindow.Window', {
+Ext.define('Densa.editWindow.Window', {
     extend: 'Ext.window.Window',
     requires: [ 'Densa.editWindow.WindowController' ],
     controller: 'Densa.editWindow.WindowController',

@@ -1,10 +1,10 @@
-Ext4.define('Densa.mvc.bindable.Interface', {
+Ext.define('Densa.mvc.bindable.Interface', {
     requires: [
         'Deft.promise.Deferred', 'Deft.promise.Promise'
     ],
     isBindableController: true,
-    load: Ext4.emptyFn,
-    reset: Ext4.emptyFn,
+    load: Ext.emptyFn,
+    reset: Ext.emptyFn,
 
     isDirty: function()
     {
@@ -16,14 +16,14 @@ Ext4.define('Densa.mvc.bindable.Interface', {
         return true;
     },
 
-    save: Ext4.emptyFn,
+    save: Ext.emptyFn,
 
-    getLoadedRecord: Ext4.emptyFn,
+    getLoadedRecord: Ext.emptyFn,
 
-    enable: Ext4.emptyFn,
-    disable: Ext4.emptyFn,
-    getPanel: Ext4.emptyFn,
-    onAdd: Ext4.emptyFn,
+    enable: Ext.emptyFn,
+    disable: Ext.emptyFn,
+    getPanel: Ext.emptyFn,
+    onAdd: Ext.emptyFn,
 
     allowDelete: function()
     {

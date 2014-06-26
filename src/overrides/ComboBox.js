@@ -1,4 +1,4 @@
-Ext4.define('Densa.overrides.ComboBox', {
+Ext.define('Densa.overrides.ComboBox', {
     override: 'Ext.form.field.ComboBox',
     showNoSelection: false,
     defaultEmptyText: 'no selection',
@@ -37,7 +37,7 @@ Ext4.define('Densa.overrides.ComboBox', {
 
     setValue: function(value, doSelect)
     {
-        value = Ext4.Array.from(value);
+        value = Ext.Array.from(value);
         for (i = 0; i < value.length; i++) {
             var record = value[i];
             if (record.isModel && record.emptyValue) {

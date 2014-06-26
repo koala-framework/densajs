@@ -3,7 +3,7 @@
  *
  * A {@link Ext.panel.Panel Panel} class used for providing drag-drop-enabled portal layouts.
  */
-Ext4.define('Densa.portal.Panel', {
+Ext.define('Densa.portal.Panel', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.portalpanel',
 
@@ -73,7 +73,7 @@ Ext4.define('Densa.portal.Panel', {
     // private
     initEvents : function(){
         this.callParent();
-        this.dd = Ext4.create('Densa.portal.DropZone', this, this.dropConfig);
+        this.dd = Ext.create('Densa.portal.DropZone', this, this.dropConfig);
     },
 
     // private
@@ -102,7 +102,7 @@ Ext4.define('Densa.portal.Panel', {
         var me = this, id = me.stateful && me.getStateId(), state;
         if (id) {
             state = me.getState() || [];
-            Ext4.state.Manager.set(id, state);
+            Ext.state.Manager.set(id, state);
         }
     },
     applyState: function (state) {

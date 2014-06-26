@@ -1,4 +1,4 @@
-Ext4.define('Densa.mvc.bindable.GridBinding', {
+Ext.define('Densa.mvc.bindable.GridBinding', {
     extend: 'Densa.mvc.bindable.Grid',
 
     bindableToGridController: null,
@@ -6,9 +6,9 @@ Ext4.define('Densa.mvc.bindable.GridBinding', {
 
     init: function()
     {
-        if (!this.bindableToGridController) Ext4.Error.raise('bindableToGridController config is required');
-        if (!(this.bindableToGridController instanceof Densa.grid.controller.Bind)) Ext4.Error.raise('bindableToGridController config needs to be a Densa.grid.controller.Bind');
-        if (this.panel && !(this.panel instanceof Ext4.panel.Panel)) Ext4.Error.raise('panel config needs to be a Ext.panel.Panel');
+        if (!this.bindableToGridController) Ext.Error.raise('bindableToGridController config is required');
+        if (!(this.bindableToGridController instanceof Densa.grid.controller.Bind)) Ext.Error.raise('bindableToGridController config needs to be a Densa.grid.controller.Bind');
+        if (this.panel && !(this.panel instanceof Ext.panel.Panel)) Ext.Error.raise('panel config needs to be a Ext.panel.Panel');
         if (!this.grid) this.grid = this.bindableToGridController.gridController.view;
 
         this.callParent(arguments);

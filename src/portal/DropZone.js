@@ -3,12 +3,12 @@
  *
  * Internal class that manages drag/drop for {@link Densa.portal.Panel}.
  */
-Ext4.define('Densa.portal.DropZone', {
+Ext.define('Densa.portal.DropZone', {
     extend: 'Ext.dd.DropTarget',
 
     constructor: function(portal, cfg) {
         this.portal = portal;
-        Ext4.dd.ScrollManager.register(portal.body);
+        Ext.dd.ScrollManager.register(portal.body);
         Densa.portal.DropZone.superclass.constructor.call(this, portal.body, cfg);
         portal.body.ddScrollConfig = this.ddScrollConfig;
     },
@@ -142,7 +142,7 @@ Ext4.define('Densa.portal.DropZone', {
         if (this.portal.fireEvent('validatedrop', dropEvent) !== false &&
             this.portal.fireEvent('beforedrop', dropEvent) !== false) {
 
-            Ext4.suspendLayouts();
+            Ext.suspendLayouts();
 
             // make sure panel is visible prior to inserting so that the layout doesn't ignore it
             panel.el.dom.style.display = '';
@@ -155,7 +155,7 @@ Ext4.define('Densa.portal.DropZone', {
                 c.add(panel);
             }
 
-            Ext4.resumeLayouts(true);
+            Ext.resumeLayouts(true);
 
             this.portal.fireEvent('drop', dropEvent);
 
@@ -189,7 +189,7 @@ Ext4.define('Densa.portal.DropZone', {
 
     // unregister the dropzone from ScrollManager
     unreg: function() {
-        Ext4.dd.ScrollManager.unregister(this.portal.body);
+        Ext.dd.ScrollManager.unregister(this.portal.body);
         Densa.portal.DropZone.superclass.unreg.call(this);
     }
 });

@@ -1,4 +1,4 @@
-Ext4.define('Densa.action.Delete', {
+Ext.define('Densa.action.Delete', {
     extend: 'Ext.Action',
     defaultText: 'Delete',
     constructor: function(config)

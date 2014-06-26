@@ -1,4 +1,4 @@
-Ext4.define('Densa.grid.controller.DragDropOrder', {
+Ext.define('Densa.grid.controller.DragDropOrder', {
     mixins: {
         observable: 'Ext.util.Observable'
     },
@@ -11,15 +11,15 @@ Ext4.define('Densa.grid.controller.DragDropOrder', {
     init: function()
     {
         if (!this.gridController) {
-            if (!this.grid) Ext4.Error.raise('grid or gridController config is required');
-            if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext4.grid.Panel');
+            if (!this.grid) Ext.Error.raise('grid or gridController config is required');
+            if (!(this.grid instanceof Ext.grid.Panel)) Ext.Error.raise('grid config needs to be a Ext.grid.Panel');
             this.gridController = this.grid.getController();
         }
-        if (!this.gridController) Ext4.Error.raise('gridController config is required');
-        if (!(this.gridController instanceof Densa.grid.PanelController)) Ext4.Error.raise('gridController config needs to be a Densa.grid.PanelController');
+        if (!this.gridController) Ext.Error.raise('gridController config is required');
+        if (!(this.gridController instanceof Densa.grid.PanelController)) Ext.Error.raise('gridController config needs to be a Densa.grid.PanelController');
 
         var plugin = this.gridController.view.view.findPlugin('gridviewdragdrop');
-        if (!plugin) Ext4.Error.raise('Didn\'t find gridviewdragdrop plugin in grid view');
+        if (!plugin) Ext.Error.raise('Didn\'t find gridviewdragdrop plugin in grid view');
         this.gridController.view.view.on('drop', function(node, data, overRow, dropPosition, eOpts) {
             var pos = 1;
             this.gridController.view.getStore().each(function(i) {

@@ -1,4 +1,4 @@
-Ext4.define('Densa.action.ExportCsv', {
+Ext.define('Densa.action.ExportCsv', {
     extend: 'Ext.Action',
     defaultText: 'Export CSV',
     constructor: function(config)

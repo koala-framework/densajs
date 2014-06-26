@@ -1,4 +1,4 @@
-Ext4.define('Densa.mvc.bindable.ViewController', {
+Ext.define('Densa.mvc.bindable.ViewController', {
     extend: 'Densa.mvc.ViewController',
 
     mixins: {
@@ -31,13 +31,13 @@ Ext4.define('Densa.mvc.bindable.ViewController', {
     init: function()
     {
         if (!this.bindable) {
-            Ext4.Error.raise('bindable is required');
+            Ext.Error.raise('bindable is required');
         }
         if (!this.bindable.isBindableController && this.bindable.getController) {
             this.bindable = this.bindable.getController();
         }
         if (!this.bindable.isBindableController) {
-            Ext4.Error.raise('bindable needs to implement Densa.mvc.bindable.Interface');
+            Ext.Error.raise('bindable needs to implement Densa.mvc.bindable.Interface');
         }
         if (this._disableOnInit) {
             delete this._disableOnInit;
@@ -197,10 +197,10 @@ Ext4.define('Densa.mvc.bindable.ViewController', {
         var ret = this.allowDelete().then({
             success: function() {
                 if (this.autoSync) {
-                     Ext4.Msg.show({
+                     Ext.Msg.show({
                         title: this.deleteConfirmTitle,
                         msg: this.deleteConfirmText,
-                        buttons: Ext4.Msg.YESNO,
+                        buttons: Ext.Msg.YESNO,
                         scope: this,
                         fn: function(button) {
                             if (button == 'yes') {
@@ -233,7 +233,7 @@ Ext4.define('Densa.mvc.bindable.ViewController', {
                     if (this._loadedStore) {
                         this._loadedStore.remove(this.getLoadedRecord());
                     } else {
-                        Ext4.Error.raise("Can't delete if autoSync is disabled and store was not provided");
+                        Ext.Error.raise("Can't delete if autoSync is disabled and store was not provided");
                     }
                 }
             },

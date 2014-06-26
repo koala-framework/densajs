@@ -3,7 +3,7 @@
  *
  * A {@link Ext.panel.Panel Panel} class that is managed by {@link Densa.portal.Panel}.
  */
-Ext4.define('Densa.portal.Portlet', {
+Ext.define('Densa.portal.Portlet', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.portlet',
     layout: 'fit',

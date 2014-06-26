@@ -1,4 +1,4 @@
-Ext4.define('Densa.form.PanelController', {
+Ext.define('Densa.form.PanelController', {
     extend: 'Densa.mvc.ViewController',
 
     mixins: {
@@ -34,13 +34,13 @@ Ext4.define('Densa.form.PanelController', {
 
     init: function()
     {
-        if (!this.view) Ext4.Error.raise('view is required');
-        if (!(this.view instanceof Ext4.form.Panel)) Ext4.Error.raise('view needs to be a Ext.form.Panel');
+        if (!this.view) Ext.Error.raise('view is required');
+        if (!(this.view instanceof Ext.form.Panel)) Ext.Error.raise('view needs to be a Ext.form.Panel');
 
         this.view.getForm().trackResetOnLoad = true;
 
         if (this.updateOnChange) {
-            Ext4.each(this.view.query('field'), function(i) {
+            Ext.each(this.view.query('field'), function(i) {
                 i.on('change', function() {
                     this.view.updateRecord();
                 }, this);
@@ -59,19 +59,19 @@ Ext4.define('Densa.form.PanelController', {
     load: function(row, store)
     {
         if (this.view.isDisabled()) {
-            Ext4.Error.raise('Can\'t load into disabled form');
+            Ext.Error.raise('Can\'t load into disabled form');
         }
         if (this._loadedStore) this._loadedStore.un('write', this._onStoreWrite, this);
         this._loadedStore = store;
         if (this._loadedStore) this._loadedStore.on('write', this._onStoreWrite, this);
 
         if (this.autoLoadComboBoxStores) {
-            Ext4.each(this.view.query("combobox"), function(i) {
+            Ext.each(this.view.query("combobox"), function(i) {
                 if (i.getName() != '' && row.get(i.getName()) !== null && i.queryMode == 'remote' && i.store && !i.store.lastOptions) {
                     i.store.load();
                 }
             }, this);
-            Ext4.each(this.view.query('multiselectfield'), function(i) {
+            Ext.each(this.view.query('multiselectfield'), function(i) {
                 if (i.store && !i.store.lastOptions) {
                     i.store.load();
                 }
@@ -86,8 +86,8 @@ Ext4.define('Densa.form.PanelController', {
 
         // Suspend here because setting the value on a field could trigger
         // a layout, for example if an error gets set, or it's a display field
-        Ext4.suspendLayouts();
-        Ext4.iterate(row.getData(), function(fieldId, val) {
+        Ext.suspendLayouts();
+        Ext.iterate(row.getData(), function(fieldId, val) {
             var field = this.view.getForm().findField(fieldId);
             if (field) {
                 if (keepDirtyValues && field.isDirty()) {
@@ -97,7 +97,7 @@ Ext4.define('Densa.form.PanelController', {
                 field.resetOriginalValue();
             }
         }, this);
-        Ext4.resumeLayouts(true);
+        Ext.resumeLayouts(true);
     },
 
     onSaveClick: function()
@@ -118,7 +118,7 @@ Ext4.define('Densa.form.PanelController', {
                     if (this.autoSync) {
                         this.validateAndSubmit();
                     } else {
-                        Ext4.Error.raise("Can't save if autoSync is disabled and store was not provided");
+                        Ext.Error.raise("Can't save if autoSync is disabled and store was not provided");
                     }
                 }
             },
@@ -130,10 +130,10 @@ Ext4.define('Densa.form.PanelController', {
         this.allowDelete().then({
             success: function() {
                 if (this.autoSync) {
-                    Ext4.Msg.show({
+                    Ext.Msg.show({
                         title: this.deleteConfirmTitle,
                         msg: this.deleteConfirmText,
-                        buttons: Ext4.Msg.YESNO,
+                        buttons: Ext.Msg.YESNO,
                         scope: this,
                         fn: function(button) {
                             if (button == 'yes') {
@@ -151,7 +151,7 @@ Ext4.define('Densa.form.PanelController', {
                     if (this._loadedStore) {
                         this._loadedStore.remove(this.getLoadedRecord());
                     } else {
-                        Ext4.Error.raise("Can't delete if autoSync is disabled and store was not provided");
+                        Ext.Error.raise("Can't delete if autoSync is disabled and store was not provided");
                     }
                 }
             },
@@ -196,7 +196,7 @@ Ext4.define('Densa.form.PanelController', {
         this.view.updateRecord();
 
         //trackResetOnLoad only calls resetOriginalValue on load, not on updateRecord
-        Ext4.each(this.view.getRecord().fields.items, function(field) {
+        Ext.each(this.view.getRecord().fields.items, function(field) {
             var f = this.view.getForm().findField(field.name);
             if (f) {
                 f.resetOriginalValue();
@@ -232,7 +232,7 @@ Ext4.define('Densa.form.PanelController', {
     disable: function()
     {
         this.view.getForm()._record = null;
-        Ext4.each(this.view.query('field'), function(i) {
+        Ext.each(this.view.query('field'), function(i) {
             i.setValue(null);
             i.resetOriginalValue();
         }, this);
@@ -254,7 +254,7 @@ Ext4.define('Densa.form.PanelController', {
     allowSave: function()
     {
         if (!this.isValid()) {
-            Ext4.Msg.alert(this.saveValidateErrorTitle, this.saveValidateErrorMsg);
+            Ext.Msg.alert(this.saveValidateErrorTitle, this.saveValidateErrorMsg);
             return Deft.promise.Deferred.reject();
         }
         return this.mixins.bindable.allowSave.call(this);

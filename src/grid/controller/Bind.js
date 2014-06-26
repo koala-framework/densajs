@@ -1,4 +1,4 @@
-Ext4.define('Densa.grid.controller.Bind', {
+Ext.define('Densa.grid.controller.Bind', {
     mixins: {
         observable: 'Ext.util.Observable'
     },
@@ -19,20 +19,20 @@ Ext4.define('Densa.grid.controller.Bind', {
 
     init: function()
     {
-        if (!this.grid) Ext4.Error.raise('grid config is required');
-        if (!(this.grid instanceof Ext4.grid.Panel)) Ext4.Error.raise('grid config needs to be a Ext4.grid.Panel');
-        if (!this.grid.getController) Ext4.Error.raise('grid has no controller');
+        if (!this.grid) Ext.Error.raise('grid config is required');
+        if (!(this.grid instanceof Ext.grid.Panel)) Ext.Error.raise('grid config needs to be a Ext.grid.Panel');
+        if (!this.grid.getController) Ext.Error.raise('grid has no controller');
         this.gridController = this.grid.getController();
-        if (!(this.gridController instanceof Densa.grid.PanelController)) Ext4.Error.raise('gridController needs to be a Densa.grid.PanelController');
+        if (!(this.gridController instanceof Densa.grid.PanelController)) Ext.Error.raise('gridController needs to be a Densa.grid.PanelController');
 
-        if (!this.bindable) Ext4.Error.raise('bindable config is required');
+        if (!this.bindable) Ext.Error.raise('bindable config is required');
         if (!this.bindable.isBindableController) {
             if (this.bindable.getController) {
                 this.bindable = this.bindable.getController();
             }
         }
         if (!this.bindable.isBindableController) {
-            Ext4.Error.raise('bindable needs to implement Densa.mvc.bindable.Interface');
+            Ext.Error.raise('bindable needs to implement Densa.mvc.bindable.Interface');
         }
 
         var grid = this.gridController.view;
@@ -40,7 +40,7 @@ Ext4.define('Densa.grid.controller.Bind', {
         bindable.disable();
 
         if (!this.addButton) this.addButton = grid.down('button#add');
-        if (this.addButton && !(this.addButton instanceof Ext4.button.Button)) Ext4.Error.raise('addButton config needs to be a Ext.button.Button');
+        if (this.addButton && !(this.addButton instanceof Ext.button.Button)) Ext.Error.raise('addButton config needs to be a Ext.button.Button');
 
         grid.on('selectionchange', function(model, rows) {
             if (rows[0]) {
@@ -56,10 +56,10 @@ Ext4.define('Densa.grid.controller.Bind', {
 
         grid.on('beforeselect', function(sm, record) {
             if (bindable.getLoadedRecord() !== record && bindable.isDirty()) {
-                Ext4.Msg.show({
+                Ext.Msg.show({
                     title: this.saveChangesTitle,
                     msg: this.saveChangesMsg,
-                    buttons: Ext4.Msg.YESNOCANCEL,
+                    buttons: Ext.Msg.YESNOCANCEL,
                     scope: this,
                     fn: function(button) {
                         if (button == 'yes') {

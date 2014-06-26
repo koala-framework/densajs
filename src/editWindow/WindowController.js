@@ -1,4 +1,4 @@
-Ext4.define('Densa.editWindow.WindowController', {
+Ext.define('Densa.editWindow.WindowController', {
     extend: 'Densa.mvc.ViewController',
     uses: [ 'Densa.data.StoreSyncQueue' ],
 
@@ -39,19 +39,19 @@ Ext4.define('Densa.editWindow.WindowController', {
     },
     init: function()
     {
-        if (!this.view) Ext4.Error.raise('view is required');
-        if (!(this.view instanceof Ext4.window.Window)) Ext4.Error.raise('view needs to be a Ext.window.Window');
+        if (!this.view) Ext.Error.raise('view is required');
+        if (!(this.view instanceof Ext.window.Window)) Ext.Error.raise('view needs to be a Ext.window.Window');
 
         if (!this.bindable) {
             //by default (most common case) get form
             this.bindable = this.view.down('> form');
         }
-        if (!this.bindable) Ext4.Error.raise('bindable config is required');
+        if (!this.bindable) Ext.Error.raise('bindable config is required');
         if (!this.bindable.isBindableController && this.bindable.getController) {
             this.bindable = this.bindable.getController();
         }
         if (!this.bindable.isBindableController) {
-            Ext4.Error.raise('bindable config needs to be a Densa.mvc.bindable.Interface');
+            Ext.Error.raise('bindable config needs to be a Densa.mvc.bindable.Interface');
         }
 
         this.view.on('beforeclose', function() {
@@ -137,11 +137,11 @@ Ext4.define('Densa.editWindow.WindowController', {
     onCancelClick: function()
     {
         if (this.bindable.isDirty()) {
-            Ext4.Msg.show({
+            Ext.Msg.show({
                 title: this.saveChangesTitle,
                 msg: this.saveChangesMsg,
-                icon: Ext4.MessageBox.QUESTION,
-                buttons: Ext4.Msg.YESNOCANCEL,
+                icon: Ext.MessageBox.QUESTION,
+                buttons: Ext.Msg.YESNOCANCEL,
                 fn: function(btn) {
                     if (btn == 'no') {
                         if (this._loadedStore && this.getLoadedRecord().phantom) {
@@ -187,10 +187,10 @@ Ext4.define('Densa.editWindow.WindowController', {
         this.bindable.allowDelete().then({
             success: function() {
                 if (this.autoSync) {
-                    Ext4.Msg.show({
+                    Ext.Msg.show({
                         title: this.deleteConfirmTitle,
                         msg: this.deleteConfirmText,
-                        buttons: Ext4.Msg.YESNO,
+                        buttons: Ext.Msg.YESNO,
                         scope: this,
                         fn: function(button) {
                             if (button == 'yes') {
@@ -206,7 +206,7 @@ Ext4.define('Densa.editWindow.WindowController', {
                     });
                 } else {
                     if (!this._loadedStore) {
-                        Ext4.Error.raise("Can't delete record without store");
+                        Ext.Error.raise("Can't delete record without store");
                     }
                     this._loadedStore.remove(this.getLoadedRecord());
                     this.closeWindow();

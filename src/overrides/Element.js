@@ -1,6 +1,6 @@
 // Workaround from http://www.sencha.com/forum/showthread.php?266651-4.2.1-GA-ToolTip-cut-off-on-Mac-Firefox
 // Fixed in Ext 4.2.2
-Ext4.define('Densa.overrides.Element', {
+Ext.define('Densa.overrides.Element', {
     override: 'Ext.dom.Element',
 
     getWidth: function (contentWidth, preciseWidth) {
@@ -20,13 +20,13 @@ Ext4.define('Densa.overrides.Element', {
         // subpixel measurements so we can force them to always be rounded up. See
         // https://bugzilla.mozilla.org/show_bug.cgi?id=458617
         // Rounding up ensures that the width includes the full width of the text contents.
-        if (Ext4.supports.BoundingClientRect) {
+        if (Ext.supports.BoundingClientRect) {
             rect = dom.getBoundingClientRect();
             // IE9 is the only browser that supports getBoundingClientRect() and
             // uses a filter to rotate the element vertically.  When a filter
             // is used to rotate the element, the getHeight/getWidth functions
             // are not inverted (see setVertical).
-            width = (me.vertical && !Ext4.isIE9 && !Ext4.supports.RotatedBoundingClientRect) ?
+            width = (me.vertical && !Ext.isIE9 && !Ext.supports.RotatedBoundingClientRect) ?
                 (rect.bottom - rect.top) : (rect.right - rect.left);
             width = preciseWidth ? width : Math.ceil(width);
         } else {
@@ -36,7 +36,7 @@ Ext4.define('Densa.overrides.Element', {
         // IE9/10 Direct2D dimension rounding bug: https://sencha.jira.com/browse/EXTJSIV-603
         // there is no need make adjustments for this bug when the element is vertically
         // rotated because the width of a vertical element is its rotated height
-        if (Ext4.supports.Direct2DBug && !me.vertical) {
+        if (Ext.supports.Direct2DBug && !me.vertical) {
             // get the fractional portion of the sub-pixel precision width of the element's text contents
             floating = me.adjustDirect2DDimension('width');
             if (preciseWidth) {

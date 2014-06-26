@@ -1,4 +1,4 @@
-Ext4.define('Densa.form.Panel', {
+Ext.define('Densa.form.Panel', {
     extend: 'Ext.form.Panel',
     requires: [
         'Densa.form.PanelController'

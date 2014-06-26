@@ -1,4 +1,4 @@
-Ext4.define('Densa.grid.PanelController', {
+Ext.define('Densa.grid.PanelController', {
     extend: 'Densa.mvc.ViewController',
     uses: [ 'Ext.window.MessageBox' ],
     autoSync: true,
@@ -29,8 +29,8 @@ Ext4.define('Densa.grid.PanelController', {
 
     init: function()
     {
-        if (!this.view) Ext4.Error.raise('view config is required');
-        if (!(this.view instanceof Ext4.grid.Panel)) Ext4.Error.raise('view config needs to be a Ext.grid.Panel');
+        if (!this.view) Ext.Error.raise('view config is required');
+        if (!(this.view instanceof Ext.grid.Panel)) Ext.Error.raise('view config needs to be a Ext.grid.Panel');
         var grid = this.view;
 
         if (this.getDeleteButton) this.getDeleteButton().disable();
@@ -42,7 +42,7 @@ Ext4.define('Densa.grid.PanelController', {
                 if (this.getDeleteButton) this.getDeleteButton().disable();
             }
         }, this);
-        Ext4.each(grid.query('> toolbar[dock=top] field'), function(field) {
+        Ext.each(grid.query('> toolbar[dock=top] field'), function(field) {
             field.on('change', function() {
                 var filterId = 'filter-'+field.getName();
                 var v = field.getValue();
@@ -58,7 +58,7 @@ Ext4.define('Densa.grid.PanelController', {
         }, this);
 
         if (grid.getStore()) this.onBindStore();
-        Ext4.Function.interceptAfter(grid, "bindStore", this.onBindStore, this);
+        Ext.Function.interceptAfter(grid, "bindStore", this.onBindStore, this);
 
         if (this.autoLoad) {
             this.view.getStore().load();
@@ -69,10 +69,10 @@ Ext4.define('Densa.grid.PanelController', {
     onDeleteClick: function(options)
     {
         if (this.autoSync) {
-            Ext4.Msg.show({
+            Ext.Msg.show({
                 title: this.deleteConfirmTitle,
                 msg: this.deleteConfirmText,
-                buttons: Ext4.Msg.YESNO,
+                buttons: Ext.Msg.YESNO,
                 scope: this,
                 fn: function(button) {
                     if (button == 'yes') {
@@ -105,10 +105,10 @@ Ext4.define('Densa.grid.PanelController', {
     {
         var s = this.view.getStore();
         this._store = s;
-        Ext4.each(this.view.query('pagingtoolbar'), function(i) {
+        Ext.each(this.view.query('pagingtoolbar'), function(i) {
             i.bindStore(s);
         }, this);
-        Ext4.each(this.view.query('> toolbar[dock=top] field'), function(field) {
+        Ext.each(this.view.query('> toolbar[dock=top] field'), function(field) {
             var filterId = 'filter-'+field.getName();
             var v = field.getValue();
             if (typeof v == 'undefined') v = null;
@@ -128,7 +128,7 @@ Ext4.define('Densa.grid.PanelController', {
 
         //header
         var sep = '';
-        Ext4.each(this.view.columns, function(col) {
+        Ext.each(this.view.columns, function(col) {
             if (!col.dataIndex) return;
             csv += sep+col.text;
             sep = ';';
@@ -149,19 +149,19 @@ Ext4.define('Densa.grid.PanelController', {
             pageSize: pageSize
         });
 
-        Ext4.Msg.show({
+        Ext.Msg.show({
             title: this.exportProgressTitle,
             msg: this.exportProgressMsg,
             progress: true,
-            buttons: Ext4.Msg.CANCEL
+            buttons: Ext.Msg.CANCEL
         });
 
         loadPage.call(this);
 
         function loadPage()
         {
-            if (!Ext4.Msg.isVisible()) return; //export cancelled
-            Ext4.Msg.updateProgress((page-1)/pageCount);
+            if (!Ext.Msg.isVisible()) return; //export cancelled
+            Ext.Msg.updateProgress((page-1)/pageCount);
             store.loadPage(page, {
                 callback: function() {
                     exportRows.call(this);
@@ -169,7 +169,7 @@ Ext4.define('Densa.grid.PanelController', {
                         page++;
                         loadPage.call(this);
                     } else {
-                        Ext4.Msg.updateProgress(1);
+                        Ext.Msg.updateProgress(1);
                         createDownload.call(this);
                     }
                 },
@@ -181,7 +181,7 @@ Ext4.define('Densa.grid.PanelController', {
         {
             store.each(function(row) {
                 var sep = '';
-                Ext4.each(this.view.columns, function(col) {
+                Ext.each(this.view.columns, function(col) {
                     if (!col.dataIndex) return;
                     var val = row.get(col.dataIndex);
                     if (col.renderer) {
@@ -210,7 +210,7 @@ Ext4.define('Densa.grid.PanelController', {
             });
             a.dom.click();
             a.remove();
-            Ext4.Msg.hide();
+            Ext.Msg.hide();
         }
     }
 });

@@ -1,4 +1,4 @@
-Ext4.define('Densa.grid.Panel', {
+Ext.define('Densa.grid.Panel', {
     extend: 'Ext.grid.Panel',
     requires: [
         'Densa.grid.PanelController'

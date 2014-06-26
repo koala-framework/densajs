@@ -1,4 +1,4 @@
-Ext4.define('Densa.mvc.bindable.Abstract', {
+Ext.define('Densa.mvc.bindable.Abstract', {
     extend: 'Densa.mvc.bindable.Interface',
     mixins: {
         observable: 'Ext.util.Observable'
@@ -8,5 +8,5 @@ Ext4.define('Densa.mvc.bindable.Abstract', {
         this.init();
     },
 
-    init: Ext4.emptyFn
+    init: Ext.emptyFn
 });

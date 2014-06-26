@@ -1,4 +1,4 @@
-Ext4.define('Densa.overrides.MultiSelect', {
+Ext.define('Densa.overrides.MultiSelect', {
     override: 'Ext.ux.form.MultiSelect',
 
     setValue: function(value){
@@ -14,7 +14,7 @@ Ext4.define('Densa.overrides.MultiSelect', {
         // Store not loaded yet - we cannot set the value
         if (!store.getCount()) {
             store.on({
-                load: Ext4.Function.bind(me.setValue, me, [value]),
+                load: Ext.Function.bind(me.setValue, me, [value]),
                 single: true
             });
             return;

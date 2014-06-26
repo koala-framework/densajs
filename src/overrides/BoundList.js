@@ -1,4 +1,4 @@
-Ext4.define('Densa.overrides.BoundList', {
+Ext.define('Densa.overrides.BoundList', {
     override: 'Ext.view.BoundList',
     showCheckbox: false,
     initComponent: function() {

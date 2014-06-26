@@ -1,16 +1,16 @@
-Ext4.define('Densa.mvc.ViewController', {
+Ext.define('Densa.mvc.ViewController', {
     extend: 'Deft.mvc.ViewController',
     optionalControl: null,
     onViewInitialize: function()
     {
         if (this.optionalControl) {
-            this.control = Ext4.clone(this.control || {});
+            this.control = Ext.clone(this.control || {});
             for (var id in this.optionalControl) {
                 if (typeof this.control[id] != 'undefined') continue;
                 var config = this.optionalControl[id];
                 var selector = null;
                 if (id !== 'view') {
-                    if (Ext4.isString(config)) {
+                    if (Ext.isString(config)) {
                         selector = config;
                     } else if (config.selector != null) {
                         selector = config.selector;

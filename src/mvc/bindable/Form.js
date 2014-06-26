@@ -1,4 +1,4 @@
-Ext4.define('Densa.mvc.bindable.Form', {
+Ext.define('Densa.mvc.bindable.Form', {
     extend: 'Densa.mvc.bindable.Abstract',
 
     formController: null,
@@ -7,15 +7,15 @@ Ext4.define('Densa.mvc.bindable.Form', {
     {
         this.callParent(arguments);
 
-        if (this.updateOnChange) Ext4.Error.raise('updateOnChange config moved to Controller.Form');
-        if (this.focusOnAddSelector) Ext4.Error.raise('updateOnChange config moved to Controller.Form');
+        if (this.updateOnChange) Ext.Error.raise('updateOnChange config moved to Controller.Form');
+        if (this.focusOnAddSelector) Ext.Error.raise('updateOnChange config moved to Controller.Form');
 
         if (!this.formController) {
-            if (!this.form) Ext4.Error.raise('form or formController config is required');
+            if (!this.form) Ext.Error.raise('form or formController config is required');
             this.formController = this.form.getController();
         }
-        if (!this.formController) Ext4.Error.raise('formController config is required');
-        if (!(this.formController instanceof Densa.form.PanelController)) Ext4.Error.raise('formController config needs to be a Densa.form.PanelController');
+        if (!this.formController) Ext.Error.raise('formController config is required');
+        if (!(this.formController instanceof Densa.form.PanelController)) Ext.Error.raise('formController config needs to be a Densa.form.PanelController');
     },
 
     load: function(row, store)

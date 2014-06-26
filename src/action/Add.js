@@ -1,4 +1,4 @@
-Ext4.define('Densa.action.Add', {
+Ext.define('Densa.action.Add', {
     extend: 'Ext.Action',
     defaultText: 'Add',
     constructor: function(config)

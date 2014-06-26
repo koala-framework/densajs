@@ -3,7 +3,7 @@
  *
  * A layout column class used internally be {@link Densa.portal.Panel}.
  */
-Ext4.define('Densa.portal.Column', {
+Ext.define('Densa.portal.Column', {
     extend: 'Ext.container.Container',
     alias: 'widget.portalcolumn',
 
