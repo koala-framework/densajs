@@ -38,7 +38,7 @@ Ext.define('Densa.mvc.bindable.Grid', {
                 store.load();
             }
         }
-
+/*
         //if both model has HayMany assocication and child model has BelongsTo associacion
         //we set the child models the parent model instance wich they will use for getXxx
         //that way both share the same object
@@ -79,7 +79,7 @@ Ext.define('Densa.mvc.bindable.Grid', {
                 r[belongsToAssoc.instanceName] = row;
             }, this);
         }
-
+*/
         this.gridController.view.bindStore(store);
     },
 
