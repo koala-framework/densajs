@@ -172,19 +172,19 @@ Ext.define('Densa.grid.controller.Bind', {
                                                 //bindable forms can still update the row as the sync is not yet started
             syncQueue.on('finished', function(syncQueue) {
                 if (!syncQueue.hasException) {
-                    this.bindable.view.fireEvent('savesuccess');
+                    //this.bindable.view.fireEvent('savesuccess');
                 }
             }, this, { single: true });
         } else {
             this.bindable.save();                  //bindables first to allow form updating the row before sync
             this.gridController.view.getStore().sync({
                 success: function() {
-                    this.bindable.view.fireEvent('savesuccess');
+                    //this.bindable.view.fireEvent('savesuccess');
                 },
                 scope: this
             });
         }
-        this.bindable.view.fireEvent('save');
+        //this.bindable.view.fireEvent('save');
     },
 
     isValid: function()
