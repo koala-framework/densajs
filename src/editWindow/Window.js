@@ -20,19 +20,19 @@ Ext.define('Densa.editWindow.Window', {
         if (this.showDelete) {
             this.bbar.push({
                 text: this.deleteText,
-                itemId: 'delete'
+                itemId: 'deleteButton'
             });
         }
         this.bbar.push('->');
         if (this.showSave) {
             this.bbar.push({
                 text: this.saveText,
-                itemId: 'save'
+                itemId: 'saveButton'
             });
         }
         this.bbar.push({
             text: this.showSave ? this.cancelText : this.closeText,
-            itemId: 'cancel'
+            itemId: 'cancelButton'
         });
         this.callParent(arguments);
     }

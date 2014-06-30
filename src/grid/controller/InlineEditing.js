@@ -18,9 +18,9 @@ Ext.define('Densa.grid.controller.InlineEditing', {
         if (!(this.gridController instanceof Densa.grid.PanelController)) Ext.Error.raise('gridController config needs to be a Densa.grid.PanelController');
 
         var grid = this.gridController.view;
-        if (typeof this.gridAddButton == 'undefined') this.gridAddButton = grid.down('button#add');
+        if (typeof this.gridAddButton == 'undefined') this.gridAddButton = grid.down('button#addButton');
         if (this.gridAddButton && !(this.gridAddButton instanceof Ext.button.Button)) Ext.Error.raise('gridAddButton config needs to be a Ext.button.Button');
-        if (typeof this.gridSaveButton == 'undefined') this.gridSaveButton = grid.down('button#save');
+        if (typeof this.gridSaveButton == 'undefined') this.gridSaveButton = grid.down('button#saveButton');
         if (this.gridSaveButton && !(this.gridSaveButton instanceof Ext.button.Button)) Ext.Error.raise('gridSaveButton config needs to be a Ext.button.Button');
 
         if (this.gridAddButton) {

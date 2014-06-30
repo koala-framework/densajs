@@ -16,21 +16,21 @@ Ext.define('Densa.editWindow.WindowController', {
     optionalControl: {
 
         saveButton: {
-            selector: '> toolbar > button#save',
+            selector: '> toolbar > button#saveButton',
             listeners: {
                 click: 'onSaveClick'
             }
         },
 
         deleteButton: {
-            selector: '> toolbar > button#delete',
+            selector: '> toolbar > button#deleteButton',
             listeners: {
                 click: 'onDeleteClick'
             }
         },
 
         cancelButton: {
-            selector: '> toolbar > button#cancel',
+            selector: '> toolbar > button#cancelButton',
             listeners: {
                 click: 'onCancelClick'
             }

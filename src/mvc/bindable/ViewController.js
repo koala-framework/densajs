@@ -14,13 +14,13 @@ Ext.define('Densa.mvc.bindable.ViewController', {
     optionalControl: {
 
         saveButton: {
-            selector: '> toolbar > button#save',
+            selector: '> toolbar > button#saveButton',
             listeners: {
                 click: 'onSaveClick'
             }
         },
         deleteButton: {
-            selector: '> toolbar > button#delete',
+            selector: '> toolbar > button#deleteButton',
             listeners: {
                 click: 'onDeleteClick'
             }

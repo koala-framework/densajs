@@ -18,13 +18,13 @@ Ext.define('Densa.form.PanelController', {
     optionalControl: {
 
         saveButton: {
-            selector: 'button#save',
+            selector: 'button#saveButton',
             listeners: {
                 click: 'onSaveClick'
             }
         },
         deleteButton: {
-            selector: 'button#delete',
+            selector: 'button#deleteButton',
             listeners: {
                 click: 'onDeleteClick'
             }

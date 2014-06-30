@@ -36,10 +36,10 @@ Ext.define('Densa.grid.controller.EditWindow', {
         if (!this.editWindowController) Ext.Error.raise('editWindowController config is required');
         if (!(this.editWindowController instanceof Densa.editWindow.WindowController)) Ext.Error.raise('editWindowController config needs to be a Densa.editWindow.WindowController');
 
-        if (!this.addButton) this.addButton = this.gridController.view.down('button#add');
+        if (!this.addButton) this.addButton = this.gridController.view.down('button#addButton');
         if (this.addButton && !(this.addButton instanceof Ext.button.Button)) Ext.Error.raise('addButton config needs to be a Ext.button.Button');
 
-        if (!this.editActionColumn) this.editActionColumn = this.gridController.view.down('actioncolumn#edit')
+        if (!this.editActionColumn) this.editActionColumn = this.gridController.view.down('actioncolumn#editButton')
         if (this.editActionColumn && !(this.editActionColumn instanceof Ext.grid.column.Column)) Ext.Error.raise('editActionColumn config needs to be a Ext.grid.column.Column');
 
         this.gridController.view.on('celldblclick', function(grid, td, cellIndex, row, tr, rowIndex, e) {

@@ -15,11 +15,14 @@ Ext.define('Densa.grid.PanelController', {
     optionalControl: {
 
         exportCsv: {
-            click: 'onCsvExport'
+            selector: 'button#exportCsvButton',
+            listeners: {
+                click: 'onCsvExport'
+            }
         },
 
         deleteButton: {
-            selector: 'button#delete',
+            selector: 'button#deleteButton',
             listeners: {
                 click: 'onDeleteClick'
             }
