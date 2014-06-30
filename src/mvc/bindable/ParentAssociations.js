@@ -3,6 +3,7 @@ Ext.define('Densa.mvc.bindable.ParentAssociations', {
 
     bindable: null,
     associationName: null,
+    reloadRowOnSave: true,
 
     init: function()
     {
@@ -18,6 +19,29 @@ Ext.define('Densa.mvc.bindable.ParentAssociations', {
         }
         if (!this.associationName) {
             Ext.Error.raise('associationName is required');
+        }
+        if (this.reloadRowOnSave) {
+            //_parentRowStore is used so we can listen to 'write' event
+            this._parentRowStore = new Ext4.data.Store({
+                proxy: 'memory'
+            });
+            this._parentRowStore.on('write', this._reloadLoadedRow, this);
+        }
+    },
+
+    _reloadLoadedRow: function()
+    {
+        var r = this.getLoadedRecord();
+        if (r && !r.phantom) {
+            r.self.load(r.getId(), {
+                success: function(loadedRow) {
+                    r.beginEdit();
+                    r.set(loadedRow.getData());
+                    r.endEdit();
+                    r.commit();
+                },
+                scope: this
+            });
         }
     },
 
@@ -35,7 +59,12 @@ Ext.define('Densa.mvc.bindable.ParentAssociations', {
         if (!getterName) Ext.Error.raise("Can't find getterName for ");
         row[getterName](function(parentRow) {
             this.bindable.load(parentRow);
+            if (this.reloadRowOnSave) {
+                this._parentRowStore.removeAll();
+                parentRow.join(this._parentRowStore);
+            }
         }, this);
+
     },
     reset: function()
     {
