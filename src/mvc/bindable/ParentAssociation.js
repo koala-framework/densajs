@@ -1,4 +1,4 @@
-Ext.define('Densa.mvc.bindable.ParentAssociations', {
+Ext.define('Densa.mvc.bindable.ParentAssociation', {
     extend: 'Densa.mvc.bindable.Abstract',
 
     bindable: null,
