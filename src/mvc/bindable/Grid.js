@@ -38,13 +38,13 @@ Ext.define('Densa.mvc.bindable.Grid', {
                 store.load();
             }
         }
-/*
+
         //if both model has HayMany assocication and child model has BelongsTo associacion
         //we set the child models the parent model instance wich they will use for getXxx
         //that way both share the same object
         var belongsToAssoc;
         store.model.prototype.associations.each(function(assoc) {
-            if (assoc instanceof Ext.data.association.BelongsTo) {
+            if (assoc instanceof Ext.data.association.BelongsTo && assoc.model == row.$className) {
                 Ext.ClassManager.get(assoc.model).prototype.associations.each(function(i) {
                     if (i instanceof Ext.data.association.HasMany
                         && i.model == store.model.$className
@@ -53,7 +53,6 @@ Ext.define('Densa.mvc.bindable.Grid', {
                         belongsToAssoc = assoc;
                     }
                 }, this);
-
             }
         }, this);
         if (belongsToAssoc) {
@@ -79,7 +78,7 @@ Ext.define('Densa.mvc.bindable.Grid', {
                 r[belongsToAssoc.instanceName] = row;
             }, this);
         }
-*/
+
         this.gridController.view.bindStore(store);
     },
 
