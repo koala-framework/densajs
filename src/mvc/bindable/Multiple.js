@@ -105,7 +105,7 @@ Ext.define('Densa.mvc.bindable.Multiple', {
         var ret = this.callParent(arguments);
         Ext.each(this.items, function(i) {
             ret = ret.then(function() {
-                i.allowDelete()
+                return i.allowDelete()
             });
         }, this);
         return ret;
@@ -116,7 +116,7 @@ Ext.define('Densa.mvc.bindable.Multiple', {
         var ret = this.callParent(arguments);
         Ext.each(this.items, function(i) {
             ret = ret.then(function() {
-                i.allowSave()
+                return i.allowSave()
             });
         }, this);
         return ret;

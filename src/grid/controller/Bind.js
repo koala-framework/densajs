@@ -56,31 +56,14 @@ Ext.define('Densa.grid.controller.Bind', {
 
         grid.on('beforeselect', function(sm, record) {
             if (bindable.getLoadedRecord() !== record && bindable.isDirty()) {
-                Ext.Msg.show({
-                    title: this.saveChangesTitle,
-                    msg: this.saveChangesMsg,
-                    buttons: Ext.Msg.YESNOCANCEL,
-                    scope: this,
-                    fn: function(button) {
-                        if (button == 'yes') {
-                            this.doSave().then({
-                                success: function() {
-                                    bindable.reset();
-                                    grid.getSelectionModel().select(record);
-                                },
-                                failure: function() {
-                                    //validation failed re-select
-                                    grid.getSelectionModel().select(bindable.getLoadedRecord());
-                                },
-                                scope: this
-                            });
-                        } else if (button == 'no') {
-                            bindable.reset();
-                            grid.getSelectionModel().select(record);
-                        } else if (button == 'cancel') {
-                            grid.getSelectionModel().select(bindable.getLoadedRecord());
-                        }
-                    }
+                this.askSaveChanges().then({
+                    success: function() {
+                        grid.getSelectionModel().select(record);
+                    },
+                    failure: function() {
+                        grid.getSelectionModel().select(bindable.getLoadedRecord());
+                    },
+                    scope: this
                 });
                 return false;
             }
@@ -91,20 +74,60 @@ Ext.define('Densa.grid.controller.Bind', {
 
         if (this.addButton) {
             this.addButton.on('click', function() {
-                if (!bindable.isValid()) {
-                    return false;
-                }
-
-                var s = grid.getStore();
-                var row = s.model.create();
-                s.add(row);
-                this.bindable.view.fireEvent('add', row);
-
-                grid.getSelectionModel().select(row);
-                bindable.onAdd(row);
-
+                this.askSaveChanges().then({
+                    success: function() {
+                        var s = grid.getStore();
+                        var row = s.model.create();
+                        s.add(row);
+                        //this.bindable.view.fireEvent('add', row);
+                        grid.getSelectionModel().select(row);
+                        bindable.onAdd(row);
+                    },
+                    failure: function() {
+                    },
+                    scope: this
+                });
             }, this);
         }
+    },
+
+    askSaveChanges: function()
+    {
+        if (!this.bindable.isDirty()) {
+            return Deft.promise.Deferred.resolve();
+        }
+        var deferred = new Deft.promise.Deferred;
+        Ext.Msg.show({
+            title: this.saveChangesTitle,
+            msg: this.saveChangesMsg,
+            buttons: Ext.Msg.YESNOCANCEL,
+            scope: this,
+            fn: function(button) {
+                if (button == 'yes') {
+                    this.doSave().then({
+                        success: function() {
+                            this.bindable.reset();
+                            deferred.resolve();
+                        },
+                        failure: function() {
+                            //validation failed re-select
+                            deferred.reject();
+                        },
+                        scope: this
+                    });
+                } else if (button == 'no') {
+                    var rec = this.bindable.getLoadedRecord();
+                    if (rec && rec.phantom) {
+                        this.grid.getStore().remove(rec);
+                    }
+                    this.bindable.reset();
+                    deferred.resolve();
+                } else if (button == 'cancel') {
+                    deferred.reject();
+                }
+            }
+        });
+        return deferred.promise;
     },
 
     onRefreshStore: function()
@@ -132,6 +155,10 @@ Ext.define('Densa.grid.controller.Bind', {
         return this.bindable.allowSave().then({
             success: function() {
                 this.save();
+                return Deft.promise.Deferred.resolve();
+            },
+            failure: function() {
+                return Deft.promise.Deferred.failure();
             },
             scope: this
         });
