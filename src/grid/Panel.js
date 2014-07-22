@@ -3,7 +3,7 @@ Ext.define('Densa.grid.Panel', {
     requires: [
         'Densa.grid.PanelController'
     ],
-    controller: 'Densa.grid.PanelController',
+    controller: 'densa.grid',
     initComponent: function() {
         this.callParent(arguments);
     }

@@ -12,8 +12,8 @@
   ],
   "ignore": [],
   "dependencies": {
-    "extjs": "4.2.*",
-    "deftjs": "deftjs/DeftJS#0.9.1"
+    "extjs": "5.1.*",
+    "deftjs": "deftjs/DeftJS5#develop"
   },
   "license": "BSD-2-Clause"
 }

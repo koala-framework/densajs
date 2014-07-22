@@ -1,5 +1,6 @@
 Ext.define('Densa.defaultButton.Delete', {
     extend: 'Ext.button.Button',
+    alias: 'widget.densa.defaultButton.delete',
     defaultText: 'Delete',
     alias: 'widget.densa.defaultButton.delete',
     constructor: function(config)

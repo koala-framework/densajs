@@ -1,5 +1,6 @@
 Ext.define('Densa.defaultButton.Add', {
     extend: 'Ext.button.Button',
+    alias: 'widget.densa.defaultButton.add',
     defaultText: 'Add',
     alias: 'widget.densa.defaultButton.add',
     constructor: function(config)

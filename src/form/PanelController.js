@@ -1,6 +1,87 @@
 Ext.define('Densa.form.PanelController', {
-    extend: 'Densa.mvc.ViewController',
+    extend: 'Ext.app.ViewController',
 
+    alias: 'controller.densa.form',
+
+    mixins: {
+        saveable: 'Densa.viewController.Saveable'
+    },
+
+    config: {
+        control: {
+            '#deleteButton': {
+                click: 'onDeleteClick'
+            }
+/*
+            ,
+            '#saveButton': {
+                click: 'onSaveClick'
+            }
+*/
+        }
+    },
+
+    deleteConfirmText: 'Do you really wish to remove this entry?',
+    deleteConfirmTitle: 'Delete',
+    saveValidateErrorTitle: 'Save',
+    saveValidateErrorMsg: "Can't save, please fill all marked fields correctly.",
+
+    init: function()
+    {
+        if (!this.getView().getSession()) {
+            this.getViewModel().setSession(this.getView().lookupSession());
+        }
+        this.callParent(arguments);
+    },
+/*
+    onSaveClick: function()
+    {
+        if (!this.getView().isValid()) {
+            Ext.Msg.alert(this.saveValidateErrorTitle, this.saveValidateErrorMsg);
+            return;
+        }
+        var s;
+        if (this.getView().getSession()) {
+            this.getView().getSession().save();
+            s = this.getView().getSession().getParent();
+        } else {
+            s = this.getView().lookupSession();
+        }
+        var batch = s.getSaveBatch();
+        if (batch) {
+            batch.start();
+        }
+    },
+*/
+    onDeleteClick: function()
+    {
+        Ext.Msg.show({
+            title: this.deleteConfirmTitle,
+            msg: this.deleteConfirmText,
+            buttons: Ext.Msg.YESNO,
+            scope: this,
+            fn: function(button) {
+                if (button == 'yes') {
+                    var row = this.getViewModel().get('record');
+                    if (row) {
+                        row.drop();
+                    }
+                    var s;
+                    if (this.getView().getSession()) {
+                        this.getView().getSession().save();
+                        s = this.getView().getSession().getParent();
+                    } else {
+                        s = this.getView().lookupSession();
+                    }
+                    var batch = s.getSaveBatch();
+                    if (batch) {
+                        batch.start();
+                    }
+                }
+            }
+        });
+    },
+/*
     mixins: {
         bindable: 'Densa.mvc.bindable.Interface'
     },
@@ -10,10 +91,6 @@ Ext.define('Densa.form.PanelController', {
     autoLoadComboBoxStores: true,
 
     autoSync: true,
-    deleteConfirmText: 'Do you really wish to remove this entry?',
-    deleteConfirmTitle: 'Delete',
-    saveValidateErrorTitle: 'Save',
-    saveValidateErrorMsg: "Can't save, please fill all red underlined fields correctly.",
 
     optionalControl: {
 
@@ -222,16 +299,6 @@ Ext.define('Densa.form.PanelController', {
         this.view.getForm().reset(true);
     },
 
-    isDirty: function()
-    {
-        if (this.updateOnChange) return false;
-        return this.view.getForm().isDirty();
-    },
-
-    isValid: function()
-    {
-        return this.view.getForm().isValid();
-    },
 
     enable: function()
     {
@@ -258,6 +325,18 @@ Ext.define('Densa.form.PanelController', {
             return true;
         }
     },
+*/
+
+    isDirty: function()
+    {
+        //form syncs to session, so it can be considerd as not dirty
+        return false;
+    },
+
+    isValid: function()
+    {
+        return this.getView().getForm().isValid();
+    },
 
     allowSave: function()
     {
@@ -265,6 +344,6 @@ Ext.define('Densa.form.PanelController', {
             Ext.Msg.alert(this.saveValidateErrorTitle, this.saveValidateErrorMsg);
             return Deft.promise.Deferred.reject();
         }
-        return this.mixins.bindable.allowSave.call(this);
+        return this.mixins.saveable.allowSave.call(this);
     }
 });

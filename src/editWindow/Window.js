@@ -1,7 +1,7 @@
 Ext.define('Densa.editWindow.Window', {
     extend: 'Ext.window.Window',
-    requires: [ 'Densa.editWindow.WindowController' ],
-    controller: 'Densa.editWindow.WindowController',
+//     requires: [ 'Densa.editWindow.WindowController' ],
+//     controller: 'Densa.editWindow.WindowController',
     layout: 'fit',
     border: false,
     modal: true,
@@ -20,19 +20,28 @@ Ext.define('Densa.editWindow.Window', {
         if (this.showDelete) {
             this.bbar.push({
                 text: this.deleteText,
-                itemId: 'deleteButton'
+                itemId: 'deleteButton',
+                reference: 'deleteButton'
             });
         }
         this.bbar.push('->');
         if (this.showSave) {
             this.bbar.push({
                 text: this.saveText,
-                itemId: 'saveButton'
+                itemId: 'saveButton',
+                reference: 'saveButton',
+                listeners: {
+                    click: 'onSaveClick'
+                }
             });
         }
         this.bbar.push({
             text: this.showSave ? this.cancelText : this.closeText,
-            itemId: 'cancelButton'
+            itemId: 'cancelButton',
+            reference: 'cancelButton',
+                listeners: {
+                    click: 'onCancelClick'
+                }
         });
         this.callParent(arguments);
     }

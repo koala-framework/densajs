@@ -1,60 +1,53 @@
 Ext.define('Densa.grid.PanelController', {
-    extend: 'Densa.mvc.ViewController',
+    extend: 'Ext.app.ViewController',
     uses: [ 'Ext.window.MessageBox' ],
+    alias: 'controller.densa.grid',
+
     autoSync: true,
-    autoLoad: false,
     deleteConfirmTitle: 'Delete',
     deleteConfirmText: 'Do you really wish to remove this entry?',
     exportProgressTitle: 'Export',
     exportProgressMsg: 'Exporting rows...',
+    saveChangesTitle: 'Save',
+    saveChangesMsg: 'Do you want to save the changes?',
 
-    grid: null,
 
-    _store: null,
-
-    optionalControl: {
-
-        exportCsv: {
-            selector: 'button#exportCsvButton',
-            listeners: {
-                click: 'onCsvExport'
-            }
-        },
-
-        deleteButton: {
-            selector: 'button#deleteButton',
-            listeners: {
+    config: {
+        control: {
+            '#deleteButton': {
                 click: 'onDeleteClick'
+            },
+            '#addButton': {
+                click: 'onAddClick'
+            },
+            '#exportCsvButton': {
+                click: 'onCsvExportClick'
             }
         }
-
     },
 
     init: function()
     {
-        if (!this.view) Ext.Error.raise('view config is required');
-        if (!(this.view instanceof Ext.grid.Panel)) Ext.Error.raise('view config needs to be a Ext.grid.Panel');
-        var grid = this.view;
+        var grid = this.getView();
 
-        if (this.getDeleteButton) this.getDeleteButton().disable();
-        grid.on('selectionchange', function(model, rows) {
-            if (rows[0]) {
-                var row = rows[0];
-                if (this.getDeleteButton) this.getDeleteButton().enable();
-            } else {
-                if (this.getDeleteButton) this.getDeleteButton().disable();
-            }
-        }, this);
+        if (grid.down('#deleteButton')) {
+            grid.down('#deleteButton').disable();
+            grid.down('#deleteButton').setBind({
+                disabled: '{!'+this.getView().getReference()+'.selection}'
+            });
+        }
+
         Ext.each(grid.query('> toolbar[dock=top] field'), function(field) {
             field.on('change', function() {
                 var filterId = 'filter-'+field.getName();
                 var v = field.getValue();
-                var filter = this.view.getStore().filters.get(filterId);
+                var filter = this.getView().getStore().filters.get(filterId);
                 if (!filter || filter.value != v) {
-                    this.view.getStore().addFilter({
+                    this.getView().getStore().addFilter({
                         id: filterId,
                         property: field.getName(),
-                        value: v
+                        value: v,
+                        exatchMatch: v == '' ? true : false
                     });
                 }
             }, this, { buffer: 300 });
@@ -63,13 +56,177 @@ Ext.define('Densa.grid.PanelController', {
         if (grid.getStore()) this.onBindStore();
         Ext.Function.interceptAfter(grid, "bindStore", this.onBindStore, this);
 
-        if (this.autoLoad) {
-            this.view.getStore().load();
-        }
+        grid.on('beforeselect', function(sm, record) {
+            console.log(sm.getSelection());
+            var parentSessionView = this.getView().findParentBy(function(i){return i.getSession()});
+            if (parentSessionView) {
+                var selection = this.getView().getSelection();
+                var isDirty = selection.length && selection[0].phantom;
+                Ext.each(parentSessionView.query("[session]"), function(i) {
+                    if (i.getSession().getChangesForParent()) {
+                        isDirty = true;
+                    }
+                }, this);
+                Ext.each(parentSessionView.query("[controller]"), function(i) {
+                    //additionally a controller can be dirty
+                    if (i.getController().isSaveable && i.getController().isDirty()) {
+                        isDirty = true;
+                    }
+                }, this);
+                if (isDirty) {
+                    this.askSaveChanges().then({
+                        success: function() {
+                            console.log('success!');
+                            this.getView().setSelection(record);
+                        },
+                        failure: function() {
+                            console.log('failure!');
+
+                            this.getView().setSelection(sm.getSelection()); //set to previous selection
+                        },
+                        scope: this
+                    });
+                    return false;
+                }
+            }
+
+//             var isDirty = false;
+//             var sessionView = this.getView().findParentBy(function(i){return i.getSession()});
+//             Ext.each(sessionView.query("[session]"), function(i) {
+//                 if (i.getSession().getChanges()) {
+//                     isDirty = true;
+//                 }
+//             }, this);
+//             if (isDirty) {
+//                 this.askSaveChanges().then({
+//                     success: function() {
+//                         this.getView().setSelection(record);
+//                     },
+//                     failure: function() {
+//                         this.getView().setSelection(bindable.getLoadedRecord()); //TODO
+//                     },
+//                     scope: this
+//                 });
+//                 return false;
+//             }
+        }, this);
 
     },
 
-    onDeleteClick: function(options)
+    askSaveChanges: function()
+    {
+        var deferred = new Deft.promise.Deferred;
+        Ext.Msg.show({
+            title: this.saveChangesTitle,
+            msg: this.saveChangesMsg,
+            buttons: Ext.Msg.YESNOCANCEL,
+            scope: this,
+            fn: function(button) {
+                if (button == 'yes') {
+                    this.doSave().then({
+                        success: function() {
+
+                            deferred.resolve();
+                        },
+                        failure: function() {
+                            //validation failed re-select
+                            deferred.reject();
+                        },
+                        scope: this
+                    });
+                } else if (button == 'no') {
+                    //discard changes
+                    var sessionView = this.getView().findParentBy(function(i){return i.getSession()});
+                    Ext.each(sessionView.query("[session]"), function(i) {
+                        if (i.getSession().getChanges()) {
+                            i.discardSession();
+                        }
+                    }, this);
+                    var selection = this.getView().getSelection();
+                    if (selection.length && selection[0].phantom) {
+                        this.getView().suspendEvents();
+                        this.getView().setSelection([]);
+                        this.getView().resumeEvents();
+                        console.log('DROOOP');
+                        selection[0].drop();
+                    }
+                    deferred.resolve();
+                } else if (button == 'cancel') {
+                    deferred.reject();
+                }
+            }
+        });
+        return deferred.promise;
+    },
+
+    doSave: function()
+    {
+        var promise = Deft.promise.Deferred.resolve();
+
+        var parentSessionView = this.getView().findParentBy(function(i) { return i.getSession(); });
+        Ext.each(parentSessionView.query('[controller]'), function(i) {
+            if (i.getController().isSaveable) {
+                promise = promise.then({
+                    success: function() { return i.getController().allowSave(); },
+                    scope: this
+                });
+            }
+        }, this);
+
+        promise = promise.then({
+            success: function() {
+                Ext.each(parentSessionView.query('[session]'), function(i) {
+                    var s = i.getSession();
+                    if (s != this.getSession()) {
+                        console.log('save session');
+                        s.save();
+                        i.discardSession();
+                    }
+                }, this);
+                var batch = this.getSession().getSaveBatch();
+                console.log('got saveBatch', batch);
+                if (batch) {
+                    batch.start();
+                }
+            },
+            scope: this
+        });
+
+        return promise;
+    },
+/*
+    save: function(syncQueue)
+    {
+        if (syncQueue) {
+            syncQueue.add(this.gridController.view.getStore()); //sync this.gridController.view store first
+            this.bindable.save(syncQueue);         //then bindables (so bindable grid is synced second)
+                                                //bindable forms can still update the row as the sync is not yet started
+            syncQueue.on('finished', function(syncQueue) {
+                if (!syncQueue.hasException) {
+                    //this.bindable.view.fireEvent('savesuccess');
+                }
+            }, this, { single: true });
+        } else {
+            this.bindable.save();                  //bindables first to allow form updating the row before sync
+            this.gridController.view.getStore().sync({
+                success: function() {
+                    //this.bindable.view.fireEvent('savesuccess');
+                },
+                scope: this
+            });
+        }
+        //this.bindable.view.fireEvent('save');
+    },
+*/
+    onAddClick: function()
+    {
+        var s = this.getView().getStore();
+        var record = this.getView().lookupSession().createRecord(s.model);
+        s.add(record);
+        this.getView().setSelection(record);
+    },
+
+    onDeleteClick: function()
     {
         if (this.autoSync) {
             Ext.Msg.show({
@@ -81,58 +238,50 @@ Ext.define('Densa.grid.PanelController', {
                 fn: function(button) {
                     if (button == 'yes') {
                         this.deleteSelected();
-                        if (options.callback) options.callback.call(options.scope || this);
                     }
                 }
             });
         } else {
             this.deleteSelected();
-            if (options.callback) options.callback.call(options.scope || this);
         }
     },
-
     deleteSelected: function()
     {
-        this.view.getStore().remove(this.view.getSelectionModel().getSelection());
+        Ext.each(this.getView().getSelection(), function(i) {
+            i.drop();
+        }, this);
         if (this.autoSync) {
-            this.view.getStore().sync({
-                success: function() {
-                    this.fireViewEvent('savesuccess');
-                },
-                scope: this
-            });
+            var batch = this.getView().lookupSession().getSaveBatch();
+            if (batch) batch.start();
         }
         this.fireViewEvent('save');
     },
 
-    onBindStore: function()
+    onBindStore: function(store)
     {
-        var s = this.view.getStore();
-        this._store = s;
-        Ext.each(this.view.query('pagingtoolbar'), function(i) {
+        var s = this.getView().getStore();
+        Ext.each(this.getView().query('pagingtoolbar'), function(i) {
             i.bindStore(s);
         }, this);
-        Ext.each(this.view.query('> toolbar[dock=top] field'), function(field) {
+        Ext.each(this.getView().query('> toolbar[dock=top] field'), function(field) {
             var filterId = 'filter-'+field.getName();
             var v = field.getValue();
             if (typeof v == 'undefined') v = null;
-            this.view.getStore().addFilter({
+            this.getView().getStore().addFilter({
                 id: filterId,
                 property: field.getName(),
                 value: v
             }, false);
         }, this);
-
-        this.fireViewEvent('bindstore', s);
     },
 
-    onCsvExport: function()
+    onCsvExportClick: function()
     {
         var csv = '';
 
         //header
         var sep = '';
-        Ext.each(this.view.columns, function(col) {
+        Ext.each(this.getView().columns, function(col) {
             if (!col.dataIndex) return;
             csv += sep+col.text;
             sep = ';';
@@ -140,16 +289,18 @@ Ext.define('Densa.grid.PanelController', {
         csv += '\n';
 
 
+        var store = this.getView().getStore();
+
         var pageSize = 25;
-        var totalCount = this._store.getTotalCount();
+        var totalCount = store.getTotalCount();
         var pageCount = Math.ceil(totalCount / pageSize);
         var page = 1;
 
         //create own store, so grid doesn't display loaded rows
-        var store = this._store.self.create({
-            model: this._store.model,
-            filters: this._store.filters.items,
-            sorters: this._store.sorters.items,
+        var store = store.self.create({
+            model: store.model,
+            filters: store.filters.items,
+            sorters: store.sorters.items,
             pageSize: pageSize
         });
 
@@ -185,7 +336,7 @@ Ext.define('Densa.grid.PanelController', {
         {
             store.each(function(row) {
                 var sep = '';
-                Ext.each(this.view.columns, function(col) {
+                Ext.each(this.getView().columns, function(col) {
                     if (!col.dataIndex) return;
                     var val = row.get(col.dataIndex);
                     if (col.renderer) {
@@ -206,7 +357,7 @@ Ext.define('Densa.grid.PanelController', {
             var URL = window.URL || window.webkiURL;
             var blob = new Blob([csv]);
             var blobURL = URL.createObjectURL(blob);
-            var a = this.view.el.createChild({
+            var a = this.getView().el.createChild({
                 tag: 'a',
                 href: blobURL,
                 style: 'display:none;',

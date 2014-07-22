@@ -1,5 +1,6 @@
 Ext.define('Densa.defaultButton.ExportCsv', {
     extend: 'Ext.button.Button',
+    alias: 'widget.densa.defaultButton.exportCsv',
     defaultText: 'Export CSV',
     alias: 'widget.densa.defaultButton.exportCsv',
     constructor: function(config)
