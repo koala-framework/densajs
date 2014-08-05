@@ -30,7 +30,7 @@ Ext.define('Densa.grid.controller.InlineEditing', {
                 s.add(row);
                 this.fireEvent('add', row);
                 grid.getSelectionModel().select(row);
-                grid.getPlugin('cellediting').startEdit(row, 1);
+                grid.getPlugin('cellediting').startEdit(row, 0);
             }, this);
         }
 
