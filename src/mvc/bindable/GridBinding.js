@@ -46,12 +46,12 @@ Ext.define('Densa.mvc.bindable.GridBinding', {
     enable: function()
     {
         if (this.panel) this.panel.enable();
-        this.bindableToGridController.gridController.grid.enable();
+        this.bindableToGridController.gridController.view.enable();
     },
     disable: function()
     {
         if (this.panel) this.panel.disable();
-        this.bindableToGridController.gridController.grid.disable();
+        this.bindableToGridController.gridController.view.disable();
     },
     getPanel: function()
     {
