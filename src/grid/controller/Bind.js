@@ -39,7 +39,7 @@ Ext.define('Densa.grid.controller.Bind', {
         var bindable = this.bindable;
         bindable.disable();
 
-        if (!this.addButton) this.addButton = grid.down('button#addButton');
+        if (typeof this.addButton == 'undefined') this.addButton = grid.down('button#addButton');
         if (this.addButton && !(this.addButton instanceof Ext.button.Button)) Ext.Error.raise('addButton config needs to be a Ext.button.Button');
 
         grid.on('selectionchange', function(model, rows) {
