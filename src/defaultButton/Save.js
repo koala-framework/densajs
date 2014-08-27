@@ -1,6 +1,7 @@
 Ext.define('Densa.defaultButton.Save', {
     extend: 'Ext.button.Button',
     defaultText: 'Save',
+    alias: 'widget.densa.defaultButton.save',
     constructor: function(config)
     {
         if (!config) config = {};
