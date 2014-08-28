@@ -47,5 +47,27 @@ Ext.define('Densa.overrides.ComboBox', {
         }
         arguments[0] = value;
         this.callParent(arguments);
+    },
+
+    /**
+     * lastSelection is searched for records
+     * (together with store's records which are searched in the parent call)
+     *
+     * http://stackoverflow.com/questions/14200701/extjs-combo-loses-selected-value-on-store-page-load
+     */
+    findRecord: function(field, value)
+    {
+        var foundRec = null;
+        Ext.each(this.lastSelection, function(rec) {
+            if (rec.get(field) === value) {
+                foundRec = rec;
+                return false; // stop 'each' loop
+            }
+        });
+        if (foundRec) {
+            return foundRec;
+        } else {
+            return this.callParent(arguments);
+        }
     }
 });

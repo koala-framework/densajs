@@ -67,8 +67,15 @@ Ext.define('Densa.form.PanelController', {
 
         if (this.autoLoadComboBoxStores) {
             Ext.each(this.view.query("combobox"), function(i) {
-                if (i.getName() != '' && row.get(i.getName()) !== null && i.queryMode == 'remote' && i.store && !i.store.lastOptions) {
+                if (i.getName() != '' && row.get(i.getName()) !== null && i.queryMode == 'remote' && i.store) {
+                    i.store.addFilter({
+                        id: 'densaFormComboboxFilterId',
+                        property: i.valueField,
+                        value: row.get(i.getName())
+                    }, false);
                     i.store.load();
+                    i.store.filters.removeAtKey('densaFormComboboxFilterId');
+                    delete i.lastQuery;
                 }
             }, this);
             Ext.each(this.view.query('multiselectfield'), function(i) {
