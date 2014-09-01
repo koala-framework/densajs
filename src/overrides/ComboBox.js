@@ -24,10 +24,14 @@ Ext.define('Densa.overrides.ComboBox', {
         store.un('load', this._addNoSelection, this);
     },
 
+    _findNoSelectionEntry: function (record, id) {
+        return record.emptyValue ? true : false;
+    },
+
     _addNoSelection : function(store)
     {
         if (!store) store = this.getStore();
-        if (this.showNoSelection && store.find(this.valueField, null) == -1) {
+        if (this.showNoSelection && store.findBy(this._findNoSelectionEntry) == -1) {
             var row = new store.model();
             row.set(this.displayField, this.emptyText);
             row.emptyValue = true;
