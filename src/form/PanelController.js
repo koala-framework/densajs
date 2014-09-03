@@ -67,7 +67,7 @@ Ext.define('Densa.form.PanelController', {
 
         if (this.autoLoadComboBoxStores) {
             Ext.each(this.view.query("combobox"), function(i) {
-                if (i.getName() != '' && row.get(i.getName()) !== null && i.queryMode == 'remote' && i.store) {
+                if (i.getName() != '' && !!row.get(i.getName()) && i.queryMode == 'remote' && i.store) {
                     i.store.addFilter({
                         id: 'densaFormComboboxFilterId',
                         property: i.valueField,
