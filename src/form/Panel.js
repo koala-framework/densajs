@@ -4,6 +4,7 @@ Ext.define('Densa.form.Panel', {
         'Densa.form.PanelController'
     ],
     controller: 'Densa.form.PanelController',
+    autoScroll: true,
     initComponent: function() {
         this.callParent(arguments);
     }
