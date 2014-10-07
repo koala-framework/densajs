@@ -140,6 +140,7 @@ Ext.define('Densa.form.PanelController', {
                     Ext.Msg.show({
                         title: this.deleteConfirmTitle,
                         msg: this.deleteConfirmText,
+                        icon: Ext.MessageBox.QUESTION,
                         buttons: Ext.Msg.YESNO,
                         scope: this,
                         fn: function(button) {

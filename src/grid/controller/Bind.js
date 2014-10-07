@@ -100,6 +100,7 @@ Ext.define('Densa.grid.controller.Bind', {
         Ext.Msg.show({
             title: this.saveChangesTitle,
             msg: this.saveChangesMsg,
+            icon: Ext.MessageBox.QUESTION,
             buttons: Ext.Msg.YESNOCANCEL,
             scope: this,
             fn: function(button) {
