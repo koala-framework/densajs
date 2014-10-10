@@ -3,7 +3,6 @@ Ext.define('Densa.mvc.bindable.Grid', {
 
     relation: null,
     gridController: null,
-    reloadRowOnSave: false,
 
     init: function()
     {
@@ -14,10 +13,8 @@ Ext.define('Densa.mvc.bindable.Grid', {
 
         if (!this.relation) Ext.Error.raise('relation config is required');
 
-        if (this.reloadRowOnSave) {
-            //savesuccess is fired by gridController on sync after delete
-            this.gridController.view.on('savesuccess', this._reloadLoadedRow, this);
-        }
+        //savesuccess is fired by gridController on sync after delete
+        this.grid.on('savesuccess', this._reloadGrid, this);
     },
 
     load: function(row, parentStore)
@@ -99,20 +96,9 @@ Ext.define('Densa.mvc.bindable.Grid', {
         return true;
     },
 
-    _reloadLoadedRow: function()
+    _reloadGrid: function()
     {
-        var r = this.getLoadedRecord();
-        if (r && !r.phantom) {
-            r.self.load(r.getId(), {
-                success: function(loadedRow) {
-                    r.beginEdit();
-                    r.set(loadedRow.getData());
-                    r.endEdit();
-                    r.commit();
-                },
-                scope: this
-            });
-        }
+        this.gridController.view.getStore().reload();
     },
 
     save: function(syncQueue)
@@ -120,18 +106,13 @@ Ext.define('Densa.mvc.bindable.Grid', {
         if (this.gridController.view.getStore()) {
             if (syncQueue) {
                 syncQueue.add(this.gridController.view.getStore());
-                if (this.reloadRowOnSave) {
-                    syncQueue.on('finished', function() {
-                        this._reloadLoadedRow();
-
-                    }, this, { single: true });
-                }
+                syncQueue.on('finished', function() {
+                    this._reloadGrid();
+                }, this, { single: true });
             } else {
                 this.gridController.view.getStore().sync({
                     callback: function() {
-                        if (this.reloadRowOnSave) {
-                            this._reloadLoadedRow();
-                        }
+                        this._reloadGrid();
                     },
                     scope: this
                 });
