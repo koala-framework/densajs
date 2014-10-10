@@ -1,5 +1,8 @@
 Ext.define('Densa.editWindow.WindowController', {
     extend: 'Densa.mvc.ViewController',
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
     uses: [ 'Densa.data.StoreSyncQueue' ],
 
     focusOnEditSelector: 'field',
@@ -37,8 +40,13 @@ Ext.define('Densa.editWindow.WindowController', {
         }
 
     },
+    constructor: function(config) {
+        this.callParent(arguments);
+        this.mixins.observable.constructor.call(this, config);
+    },
     init: function()
     {
+        this.addEvents('savesuccess');
         if (!this.view) Ext.Error.raise('view is required');
         if (!(this.view instanceof Ext.window.Window)) Ext.Error.raise('view needs to be a Ext.window.Window');
 
@@ -57,6 +65,10 @@ Ext.define('Densa.editWindow.WindowController', {
         this.view.on('beforeclose', function() {
             this.onCancelClick();
             return false;
+        }, this);
+
+        this.bindable.view.on('savesuccess', function() {
+            this.fireEvent('savesuccess');
         }, this);
     },
 
