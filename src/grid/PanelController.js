@@ -101,8 +101,8 @@ Ext.define('Densa.grid.PanelController', {
                 },
                 scope: this
             });
-            this.fireViewEvent('save');
         }
+        this.fireViewEvent('save');
     },
 
     onBindStore: function()
