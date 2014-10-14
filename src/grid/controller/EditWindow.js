@@ -55,6 +55,7 @@ Ext.define('Densa.grid.controller.EditWindow', {
             this.addButton.on('click', function() {
                 var row = this.gridController.view.getStore().model.create();
                 this.fireEvent('add', row);
+                this.grid.fireEvent('add', row);
                 this.openEditWindow(row);
             }, this);
         }
