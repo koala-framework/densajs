@@ -22,7 +22,7 @@ Ext.define('Densa.mvc.bindable.ParentAssociation', {
         }
         if (this.reloadRowOnSave) {
             //_parentRowStore is used so we can listen to 'write' event
-            this._parentRowStore = new Ext4.data.Store({
+            this._parentRowStore = new Ext.data.Store({
                 proxy: 'memory'
             });
             this._parentRowStore.on('write', this._reloadLoadedRow, this);
