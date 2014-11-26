@@ -29,11 +29,8 @@ Ext.define('Densa.mvc.bindable.Grid', {
         }
         this._loadedRecord = row;
         var store = row[this.relation]();
-        if (!store.loaded) {
-            store.loaded = true;
-            if (!row.phantom) {
-                store.load();
-            }
+        if (!store.lastOptions && !row.phantom) {
+            store.load();
         }
 
         //if both model has HayMany assocication and child model has BelongsTo associacion
