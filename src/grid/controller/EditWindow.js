@@ -7,6 +7,8 @@ Ext.define('Densa.grid.controller.EditWindow', {
     gridController: null,
     editWindowController: null,
 
+    _removePhantomOnCancel: false,
+
     constructor: function(config) {
         this.mixins.observable.constructor.call(this, config);
         this.init();
@@ -57,6 +59,7 @@ Ext.define('Densa.grid.controller.EditWindow', {
                 this.fireEvent('add', row);
                 this.grid.fireEvent('add', row);
                 this.openEditWindow(row);
+                this._removePhantomOnCancel = true;
             }, this);
         }
         this.editWindow.on('savesuccess', function() {
@@ -65,9 +68,19 @@ Ext.define('Densa.grid.controller.EditWindow', {
         this.editWindow.on('save', function () {
             this.grid.fireEvent('save');
         }, this);
+        this.editWindow.on('cancel', function () {
+            if (this._removePhantomOnCancel) {
+                var row = this.editWindowController.getLoadedRecord();
+                if (row.phantom) {
+                    this.gridController.view.getStore().remove(row);
+                }
+            }
+            this._removePhantomOnCancel = false;
+        }, this);
     },
     openEditWindow: function(row)
     {
+        this._removePhantomOnCancel = false;
         this.editWindowController.openEditWindow(row, this.gridController.view.store);
     }
 });

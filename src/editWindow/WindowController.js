@@ -148,9 +148,7 @@ Ext.define('Densa.editWindow.WindowController', {
                 buttons: Ext.Msg.YESNOCANCEL,
                 fn: function(btn) {
                     if (btn == 'no') {
-                        if (this._loadedStore && this.getLoadedRecord().phantom) {
-                            this._loadedStore.remove(this.getLoadedRecord());
-                        }
+                        this.fireViewEvent('cancel');
                         this.closeWindow();
                     } else if (btn == 'yes') {
                         this.doSave().then({
@@ -164,9 +162,7 @@ Ext.define('Densa.editWindow.WindowController', {
                 scope: this
             });
         } else {
-            if (this._loadedStore && this.getLoadedRecord().phantom) {
-                this._loadedStore.remove(this.getLoadedRecord());
-            }
+            this.fireViewEvent('cancel');
             this.closeWindow();
         }
     },
