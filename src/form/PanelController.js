@@ -14,6 +14,7 @@ Ext.define('Densa.form.PanelController', {
     deleteConfirmTitle: 'Delete',
     saveValidateErrorTitle: 'Save',
     saveValidateErrorMsg: "Can't save, please fill all red underlined fields correctly.",
+    validatingMaskText: 'Validating...',
 
     optionalControl: {
 
@@ -261,10 +262,33 @@ Ext.define('Densa.form.PanelController', {
 
     allowSave: function()
     {
-        if (!this.isValid()) {
-            Ext.Msg.alert(this.saveValidateErrorTitle, this.saveValidateErrorMsg);
-            return Deft.promise.Deferred.reject();
+        var isValid = this.isValid();
+        if (isValid instanceof Deft.promise.Promise) {
+            var deferred = new Deft.promise.Deferred();
+            this.view.el.mask(this.validatingMaskText);
+            isValid.then({
+                success: function() {
+                    this.view.el.unmask();
+                    deferred.resolve();
+                },
+                failure: function(reason) {
+                    this.view.el.unmask();
+                    var msg = this.saveValidateErrorMsg;
+                    if (reason && reason.msg) {
+                        msg = reason.msg;
+                    }
+                    Ext.Msg.alert(this.saveValidateErrorTitle, msg);
+                    deferred.reject();
+                },
+                scope: this
+            });
+            return deferred.promise;
+        } else {
+            if (!isValid) {
+                Ext.Msg.alert(this.saveValidateErrorTitle, this.saveValidateErrorMsg);
+                return Deft.promise.Deferred.reject();
+            }
+            return this.mixins.bindable.allowSave.call(this);
         }
-        return this.mixins.bindable.allowSave.call(this);
     }
 });
