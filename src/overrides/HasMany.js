@@ -34,12 +34,15 @@ Ext.define('Densa.overrides.HasMany', {
                         exactMatch: true
                     };
                 }
-                if (!storeConfig.filters) storeConfig.filters = [];
-                storeConfig.filters.push(filter);
+
+                var localStoreConfig = Ext.clone(storeConfig);
+                if (!localStoreConfig.filters) localStoreConfig.filters = [];
+                localStoreConfig.filters.push(filter);
+
 
                 modelDefaults[foreignKey] = me.get(primaryKey);
 
-                config = Ext.apply({}, storeConfig, {
+                config = Ext.apply({}, localStoreConfig, {
                     model        : associatedModel,
                     remoteFilter : false,
                     modelDefaults: modelDefaults,
