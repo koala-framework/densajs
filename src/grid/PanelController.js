@@ -1,3 +1,5 @@
+// @require ModernizrADownload
+
 Ext.define('Densa.grid.PanelController', {
     extend: 'Densa.mvc.ViewController',
     uses: [ 'Ext.window.MessageBox' ],
@@ -7,6 +9,7 @@ Ext.define('Densa.grid.PanelController', {
     deleteConfirmText: 'Do you really wish to remove this entry?',
     exportProgressTitle: 'Export',
     exportProgressMsg: 'Exporting rows...',
+    postBackUrl: null,
 
     grid: null,
 
@@ -202,19 +205,48 @@ Ext.define('Densa.grid.PanelController', {
 
         function createDownload()
         {
-            //TODO IE8 compatibility
+            var downloadFilename = 'export.csv';
             var URL = window.URL || window.webkiURL;
-            var blob = new Blob([csv]);
-            var blobURL = URL.createObjectURL(blob);
-            var a = this.view.el.createChild({
-                tag: 'a',
-                href: blobURL,
-                style: 'display:none;',
-                download: 'export.csv'
-            });
-            a.dom.click();
-            a.remove();
-            Ext.Msg.hide();
+            if (false && window.Modernizr && Modernizr.adownload && URL && window.Blob) {
+                //modern browser
+                var blob = new Blob([csv]);
+                var blobURL = URL.createObjectURL(blob);
+                var a = this.view.el.createChild({
+                    tag: 'a',
+                    href: blobURL,
+                    style: 'display:none;',
+                    download: downloadFilename
+                });
+                a.dom.click();
+                a.remove();
+                Ext.Msg.hide();
+            } else {
+                //IE, Safari
+                Ext.Ajax.request({
+                    url: this.postBackUrl,
+                    params: csv,
+                    headers: {
+                        'Content-Type': 'text/csv',
+                        'X-Download-Filename': downloadFilename
+                    },
+                    success: function(response, options) {
+                        if (!Ext.Msg.isVisible()) return; //export cancelled
+                        var r = Ext.decode(response.responseText);
+                        var a = this.view.el.createChild({
+                            tag: 'a',
+                            href: r.downloadUrl,
+                            style: 'display:none;'
+                        });
+                        a.dom.click();
+                        a.remove();
+                        Ext.Msg.hide();
+                    },
+                    failure: function() {
+                        Ext.Msg.hide();
+                    },
+                    scope: this
+                });
+            }
         }
     }
 });
