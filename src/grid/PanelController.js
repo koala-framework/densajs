@@ -210,7 +210,7 @@ Ext.define('Densa.grid.PanelController', {
                 tag: 'a',
                 href: blobURL,
                 style: 'display:none;',
-                download: 'export.csv'
+                download: 'export-utf8.csv'
             });
             a.dom.click();
             a.remove();
