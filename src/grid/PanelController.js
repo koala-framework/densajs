@@ -207,7 +207,7 @@ Ext.define('Densa.grid.PanelController', {
         {
             var downloadFilename = 'export.csv';
             var URL = window.URL || window.webkiURL;
-            if (false && window.Modernizr && Modernizr.adownload && URL && window.Blob) {
+            if (window.Modernizr && Modernizr.adownload && URL && window.Blob) {
                 //modern browser
                 var blob = new Blob([csv]);
                 var blobURL = URL.createObjectURL(blob);
