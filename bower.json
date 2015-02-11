@@ -13,7 +13,8 @@
   "ignore": [],
   "dependencies": {
     "extjs": "4.2.*",
-    "deftjs": "deftjs/DeftJS#0.9.1"
+    "deftjs": "deftjs/DeftJS#0.9.1",
+    "excel-builder": "stephenliberty/excel-builder.js#ef049b7c500caf598a15fe2a9243a83a8c14927b"
   },
   "license": "BSD-2-Clause"
 }
