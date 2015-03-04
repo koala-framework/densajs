@@ -18,6 +18,11 @@ Ext.define('Densa.mvc.bindable.Multiple', {
                 Ext.Error.raise('item is not a bindableController');
             }
         }
+        Ext.each(this.items, function(i) {
+            i.on('savesuccess', function() {
+                this.fireEvent('savesuccess');
+            }, this);
+        }, this);
     },
 
     load: function(row, store)

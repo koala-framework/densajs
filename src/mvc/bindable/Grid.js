@@ -15,6 +15,9 @@ Ext.define('Densa.mvc.bindable.Grid', {
 
         //savesuccess is fired by gridController on sync after delete
         this.grid.on('savesuccess', this._reloadGrid, this);
+        this.grid.on('savesuccess', function() {
+            this.fireEvent('savesuccess');
+        }, this);
     },
 
     load: function(row, parentStore)

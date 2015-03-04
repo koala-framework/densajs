@@ -27,6 +27,9 @@ Ext.define('Densa.mvc.bindable.ParentAssociation', {
             });
             this._parentRowStore.on('write', this._reloadLoadedRow, this);
         }
+        this.bindable.on('savesuccess', function () {
+            this.fireEvent('savesuccess');
+        }, this);
     },
 
     _reloadLoadedRow: function()

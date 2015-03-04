@@ -118,6 +118,7 @@ Ext.define('Densa.form.PanelController', {
                         this._loadedStore.sync({
                             success: function() {
                                 this.fireViewEvent('savesuccess');
+                                this.fireEvent('savesuccess');
                             },
                             scope: this
                         });
@@ -178,6 +179,7 @@ Ext.define('Densa.form.PanelController', {
                 this.getLoadedRecord().save({
                     success: function() {
                         this.fireViewEvent('savesuccess', this.getLoadedRecord());
+                        this.fireEvent('savesuccess', this.getLoadedRecord());
                         if (!this._loadedStore) {
                             //if we don't have a store we can't listen to 'write' event
                             this.load(this.getLoadedRecord());

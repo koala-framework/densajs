@@ -59,8 +59,9 @@ Ext.define('Densa.editWindow.WindowController', {
             return false;
         }, this);
 
-        this.bindable.view.on('savesuccess', function() {
+        this.bindable.on('savesuccess', function() {
             this.fireViewEvent('savesuccess');
+            this.fireEvent('savesuccess');
         }, this);
     },
 
@@ -106,6 +107,7 @@ Ext.define('Densa.editWindow.WindowController', {
                         syncQueue.start({
                             success: function() {
                                 this.fireViewEvent('savesuccess');
+                                this.fireEvent('savesuccess');
                             },
                             scope: this
                         });
@@ -113,7 +115,9 @@ Ext.define('Densa.editWindow.WindowController', {
                         this.bindable.save();
                         this.bindable.getLoadedRecord().save({
                             callback: function(records, operation, success) {
-                                if (success) this.fireViewEvent('savesuccess');
+                                if (!success) return;
+                                this.fireViewEvent('savesuccess');
+                                this.fireEvent('savesuccess');
                             },
                             scope: this
                         });

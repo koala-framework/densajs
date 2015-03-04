@@ -1,6 +1,15 @@
 Ext.define('Densa.mvc.ViewController', {
     extend: 'Deft.mvc.ViewController',
     optionalControl: null,
+
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
+
+    constructor: function(config) {
+        this.callParent(arguments);
+        this.mixins.observable.constructor.call(this, config);
+    },
     onViewInitialize: function()
     {
         if (this.optionalControl) {
