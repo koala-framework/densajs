@@ -12,7 +12,10 @@ Ext.define('Densa.mvc.bindable.GridBinding', {
         if (!this.grid) this.grid = this.bindableToGridController.gridController.view;
 
         this.callParent(arguments);
-        this.bindableToGridController.bindable.view.on('savesuccess', this._reloadGrid, this);
+        this.bindableToGridController.bindable.on('savesuccess', this._reloadGrid, this);
+        this.bindableToGridController.bindable.on('savesuccess', function() {
+            this.fireEvent('savesuccess');
+        }, this);
     },
 
     reset: function()
