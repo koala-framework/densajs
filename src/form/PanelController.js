@@ -213,6 +213,19 @@ Ext.define('Densa.form.PanelController', {
                 f.resetOriginalValue();
             }
         }, this);
+
+        // save values at server
+        if (this.autoSync) {
+            if (this._loadedStore) {
+                if (syncQueue) {
+                    syncQueue.add(this._loadedStore);
+                } else {
+                    this._loadedStore.sync();
+                }
+            } else {
+                this.view.getRecord().save();
+            }
+        }
     },
 
     getLoadedRecord: function()
