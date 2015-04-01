@@ -6,6 +6,7 @@ Ext.define('Densa.grid.controller.EditWindow', {
 
     gridController: null,
     editWindowController: null,
+    allowDblClick: true,
 
     _removePhantomOnCancel: false,
 
@@ -44,9 +45,12 @@ Ext.define('Densa.grid.controller.EditWindow', {
         if (!this.editActionColumn) this.editActionColumn = this.gridController.view.down('actioncolumn#editButton')
         if (this.editActionColumn && !(this.editActionColumn instanceof Ext.grid.column.Column)) Ext.Error.raise('editActionColumn config needs to be a Ext.grid.column.Column');
 
-        this.gridController.view.on('celldblclick', function(grid, td, cellIndex, row, tr, rowIndex, e) {
-            this.openEditWindow(row);
-        }, this);
+
+        if (this.allowDblClick) {
+            this.gridController.view.on('celldblclick', function(grid, td, cellIndex, row, tr, rowIndex, e) {
+                this.openEditWindow(row);
+            }, this);
+        }
 
         if (this.editActionColumn) {
             this.editActionColumn.on('click', function(view, cell, rowIndex, colIndex, e) {
