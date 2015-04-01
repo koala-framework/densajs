@@ -15,8 +15,8 @@ Ext.define('Densa.editWindow.Window', {
     cancelText: 'Cancel',
     closeText: 'Close',
     padding: 10,
+    bbar: [],
     initComponent: function() {
-        this.bbar = [];
         if (this.showDelete) {
             this.bbar.push({
                 text: this.deleteText,
