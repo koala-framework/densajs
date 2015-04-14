@@ -169,22 +169,35 @@ Ext.define('Densa.mvc.bindable.ViewController', {
         var ret = this.allowSave().then({
             success: function() {
                 var syncQueue = new Densa.data.StoreSyncQueue();
-                if (this.autoSync) {
+                if (this.autoSync && this._loadedStore) {
                     syncQueue.add(this._loadedStore); //sync store first
                 }
                 this.save(syncQueue);    //then bindables (so bindable grid is synced second)
                                          //bindable forms can still update the row as the sync is not yet started
-                syncQueue.start({
-                    success: function() {
-                        submitDeferred.resolve();
-                        this.fireViewEvent('savesuccess');
-                        this.fireEvent('savesuccess');
-                    },
-                    failure: function() {
-                        submitDeferred.reject();
-                    },
-                    scope: this
-                });
+                var saveSyncQueue = function() {
+                    syncQueue.start({
+                        success: function() {
+                            submitDeferred.resolve();
+                            this.fireViewEvent('savesuccess');
+                            this.fireEvent('savesuccess');
+                        },
+                        failure: function() {
+                            submitDeferred.reject();
+                        },
+                        scope: this
+                    });
+                };
+
+                if (this.autoSync && !this._loadedStore) { // no store, save record
+                    this.getLoadedRecord().save({
+                        success: function() {
+                            saveSyncQueue.call(this);
+                        },
+                        scope: this
+                    });
+                } else { // no autosync for this controller, but rest should be saved
+                    saveSyncQueue.call(this);
+                }
             },
             failure: function() {
                 submitDeferred.reject();
