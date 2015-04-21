@@ -151,7 +151,7 @@ Ext.define('Densa.form.PanelController', {
                                     this._loadedStore.remove(this.getLoadedRecord());
                                     this._loadedStore.sync();
                                 } else {
-                                    this.getLoadedRecord().destory();
+                                    this.getLoadedRecord().destroy();
                                     this.disable();
                                 }
                             }

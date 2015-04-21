@@ -203,7 +203,7 @@ Ext.define('Densa.editWindow.WindowController', {
                                     this._loadedStore.remove(this.getLoadedRecord());
                                     this._loadedStore.sync();
                                 } else {
-                                    this.getLoadedRecord().destory();
+                                    this.getLoadedRecord().destroy();
                                 }
                                 this.closeWindow();
                             }

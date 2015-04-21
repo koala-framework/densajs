@@ -235,7 +235,7 @@ Ext.define('Densa.mvc.bindable.ViewController', {
                                         }
                                     });
                                 } else {
-                                    this.getLoadedRecord().destory({
+                                    this.getLoadedRecord().destroy({
                                         success: function() {
                                             submitDeferred.resolve();
                                         },
