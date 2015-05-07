@@ -58,7 +58,12 @@ Ext.define('Densa.grid.PanelController', {
             }
         }, this);
         Ext.each(grid.query('> toolbar[dock=top] field'), function(field) {
-            field.on('change', function() {
+            var eventName = 'change';
+            if (field instanceof Ext.form.field.ComboBox && field.editable === true && field.forceSelection === true) {
+                eventName = 'select';
+            }
+
+            field.on(eventName, function() {
                 var filterId = 'filter-'+field.getName();
                 var v = field.getValue();
                 var filter = this.view.getStore().filters.get(filterId);
