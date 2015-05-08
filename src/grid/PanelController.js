@@ -14,6 +14,7 @@ Ext.define('Densa.grid.PanelController', {
     postBackUrl: null,
 
     grid: null,
+    bindable: null,
 
     _store: null,
 

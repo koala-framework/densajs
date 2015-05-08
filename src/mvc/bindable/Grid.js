@@ -18,6 +18,8 @@ Ext.define('Densa.mvc.bindable.Grid', {
         this.grid.on('savesuccess', function() {
             this.fireEvent('savesuccess');
         }, this);
+
+        this.grid.getController().bindable = this;
     },
 
     load: function(row, parentStore)
