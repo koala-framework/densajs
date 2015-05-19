@@ -1,6 +1,7 @@
 Ext.define('Densa.overrides.ComboBox', {
     override: 'Ext.form.field.ComboBox',
     showNoSelection: false,
+    showClearTrigger: false,
     defaultEmptyText: 'no selection',
 
     initComponent: function()
@@ -8,7 +9,17 @@ Ext.define('Densa.overrides.ComboBox', {
         if (this.showNoSelection && !this.emptyText) {
             this.emptyText = '('+this.defaultEmptyText+')';
         }
+        if (this.showClearTrigger) {
+            this.trigger2Cls = 'x4-form-clear-trigger';
+        }
         this.callParent(arguments);
+    },
+
+    onTrigger2Click: function () {
+        if (this.showClearTrigger) {
+            this.clearValue();
+            this.fireEvent('select', this, []);
+        }
     },
 
     onBindStore: function(store, initial)
