@@ -68,6 +68,7 @@ Ext.define('Densa.grid.controller.EditWindow', {
             }, this);
         }
         this.editWindow.on('savesuccess', function() {
+            this.grid.fireEvent('savesuccess');
             this.gridController.view.getStore().reload();
         }, this);
         this.editWindow.on('save', function () {
