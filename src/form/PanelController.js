@@ -227,6 +227,7 @@ Ext.define('Densa.form.PanelController', {
 
     isDirty: function()
     {
+        if (!this.getLoadedRecord()) return false;
         if (this.updateOnChange) return false;
         return this.view.getForm().isDirty();
     },
