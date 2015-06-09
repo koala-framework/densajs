@@ -10,19 +10,26 @@ Ext.define('Densa.mvc.bindable.Multiple', {
         if (!this.items) Ext.Error.raise('items config is required');
         if (!(this.items instanceof Array)) Ext.Error.raise('items config needs to be an array');
         if (this.items.length < 1) Ext.Error.raise('items config length needs to be >0');
-        for (var i=0; i<this.items.length; i++) {
-            if (!this.items[i].isBindableController) {
-                this.items[i] = this.items[i].getController();
-            }
-            if (!this.items[i].isBindableController) {
-                Ext.Error.raise('item is not a bindableController');
-            }
+        var items = this.items;
+        this.items = [];
+        for (var i=0; i<items.length; i++) {
+            this.addItem(items[i]);
         }
-        Ext.each(this.items, function(i) {
-            i.on('savesuccess', function() {
-                this.fireEvent('savesuccess');
-            }, this);
+    },
+
+    addItem: function(item)
+    {
+        if (!item.isBindableController) {
+            item = item.getController();
+        }
+        if (!item.isBindableController) {
+            Ext.Error.raise('item is not a bindableController');
+        }
+        item.on('savesuccess', function() {
+            this.fireEvent('savesuccess');
         }, this);
+
+        this.items.push(item);
     },
 
     load: function(row, store)
