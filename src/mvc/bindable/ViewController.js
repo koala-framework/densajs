@@ -122,6 +122,7 @@ Ext.define('Densa.mvc.bindable.ViewController', {
         } else {
             this._disableOnInit = false;
         }
+        this.getPanel().enable();
     },
     disable: function()
     {
@@ -132,6 +133,7 @@ Ext.define('Densa.mvc.bindable.ViewController', {
         } else {
             this._disableOnInit = true;
         }
+        this.getPanel().disable();
     },
     getPanel: function()
     {
