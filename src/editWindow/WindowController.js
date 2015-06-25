@@ -12,6 +12,7 @@ Ext.define('Densa.editWindow.WindowController', {
     editTitle: 'Edit',
     saveChangesTitle: 'Save',
     saveChangesMsg: 'Do you want to save the changes?',
+    _saveKeyMap: null,
 
     optionalControl: {
 
@@ -57,6 +58,38 @@ Ext.define('Densa.editWindow.WindowController', {
         this.view.on('beforeclose', function() {
             this.onCancelClick();
             return false;
+        }, this);
+
+        if (this.view.closeAction == 'destroy') {
+            this.view.on('destroy', function() {
+                if (this.bindable.view.isXType('form')) {
+                    this._saveKeyMap.destroy();
+                }
+            }, this);
+        } else if (this.view.closeAction == 'hide') {
+            this.view.on('hide', function() {
+                if (this.bindable.view.isXType('form') && this._saveKeyMap.isEnabled()) {
+                    this._saveKeyMap.disable();
+                }
+            }, this);
+        }
+
+        this.view.on('show', function() {
+            if (this.bindable.view.isXType('form')) {
+                if (!this._saveKeyMap) {
+                    this._saveKeyMap = new Ext.util.KeyMap(Ext.getBody(), {
+                        key: Ext.EventObject.ENTER,
+                        handler: function () {
+                            if (this.view.isVisible()) {
+                                this.onSaveClick();
+                            }
+                        },
+                        scope: this,
+                        defaultEventAction: 'stopEvent'
+                    });
+                }
+                if (!this._saveKeyMap.isEnabled()) this._saveKeyMap.enable();
+            }
         }, this);
 
         this.bindable.on('savesuccess', function() {
