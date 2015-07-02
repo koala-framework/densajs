@@ -154,7 +154,6 @@ Ext.define('Densa.grid.plugin.PagingSelectionPersistence', {
             i;
 
         for (i = 0; i < sel.length; i++) {
-            alert(i + sel[i]);
             this.onRowSelect(this.selModel, sel[i]);
         }
 
@@ -211,13 +210,11 @@ Ext.define('Densa.grid.plugin.PagingSelectionPersistence', {
     selectAll: function() {
         var storeB = this.grid.getStore();
         storeB.suspendEvents();
-        //alert(storeB.getTotalCount());
 
         storeB.load({
             params: {start: 0, limit: storeB.getTotalCount() },
             callback: function(records, operation, success) {
                 if (records.length > 0){ // Issue is here: Records returns as NULL
-                    //alert('Num Records: ' + records.length);
 
                     for (var i = records.length - 1; i >= 0; i--) {
                         if (!this.selected[records[i].getId()])
@@ -237,10 +234,6 @@ Ext.define('Densa.grid.plugin.PagingSelectionPersistence', {
                      this.selected[this.selection[i].id] = true;
                      };*/
                 }
-                else
-                {
-                    alert('Error no tiene records');
-                }
             },
             scope: this
         });
@@ -252,12 +245,5 @@ Ext.define('Densa.grid.plugin.PagingSelectionPersistence', {
             this.selected[rec.getId()] = true;
         }
 
-    },
-
-    countAll: function() {
-        var storeA = this.grid.getStore();
-        alert('store count '+ storeA.getCount());
-        alert('store count '+ storeA.getTotalCount());
     }
-
 });
