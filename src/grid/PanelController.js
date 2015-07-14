@@ -153,7 +153,9 @@ Ext.define('Densa.grid.PanelController', {
                 Ext4.each(this.view.columns, function(col) {
                     if (!col.dataIndex) return;
                     var val = row.get(col.dataIndex);
-                    if (col.renderer) {
+                    if (col.exportRenderer) {
+                        val = Ext4.util.Format.stripTags(col.exportRenderer(val, col, row));
+                    } else if (col.renderer) {
                         val = Ext4.util.Format.stripTags(col.renderer(val, col, row));
                     }
                     if (!val) val = '';
