@@ -62,20 +62,20 @@ Ext.define('Densa.editWindow.WindowController', {
 
         if (this.view.closeAction == 'destroy') {
             this.view.on('destroy', function() {
-                if (this.bindable.view.isXType('form')) {
+                if (this._isBindableViewForm()) {
                     this._saveKeyMap.destroy();
                 }
             }, this);
         } else if (this.view.closeAction == 'hide') {
             this.view.on('hide', function() {
-                if (this.bindable.view.isXType('form') && this._saveKeyMap.isEnabled()) {
+                if (this._isBindableViewForm() && this._saveKeyMap.isEnabled()) {
                     this._saveKeyMap.disable();
                 }
             }, this);
         }
 
         this.view.on('show', function() {
-            if (this.bindable.view.isXType('form')) {
+            if (this._isBindableViewForm()) {
                 if (!this._saveKeyMap) {
                     this._saveKeyMap = new Ext.util.KeyMap(Ext.getBody(), {
                         key: Ext.EventObject.ENTER,
@@ -96,6 +96,12 @@ Ext.define('Densa.editWindow.WindowController', {
             this.fireViewEvent('savesuccess');
             this.fireEvent('savesuccess');
         }, this);
+    },
+
+    _isBindableViewForm: function()
+    {
+        if (this.bindable.view == undefined) return false;
+        return this.bindable.view.isXType('form');
     },
 
     //store is optional, used for sync
