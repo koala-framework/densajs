@@ -120,11 +120,6 @@ Ext.define('Densa.editWindow.WindowController', {
         }
     },
 
-    validateAndSubmit: function(options)
-    {
-        return this.bindable.validateAndSubmit(options);
-    },
-
     doSave: function()
     {
         return this.bindable.allowSave().then({
