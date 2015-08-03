@@ -66,17 +66,26 @@ Ext.define('Densa.form.PanelController', {
         this._loadedStore = store;
         if (this._loadedStore) this._loadedStore.on('write', this._onStoreWrite, this);
 
+        //when loading the same row (by comparing the id) keep dirty values
+        var keepDirtyValues = this.view.getForm()._record
+            && this.view.getForm()._record.getId() == row.getId();
+
         if (this.autoLoadComboBoxStores) {
             Ext.each(this.view.query("combobox"), function(i) {
+                if (keepDirtyValues && i.isDirty()) {
+                    return;
+                }
                 if (i.getName() != '' && !!row.get(i.getName()) && i.queryMode == 'remote' && i.store) {
-                    i.store.addFilter({
-                        id: 'densaFormComboboxFilterId',
-                        property: i.valueField,
-                        value: row.get(i.getName())
-                    }, false);
-                    i.store.load();
-                    i.store.filters.removeAtKey('densaFormComboboxFilterId');
-                    delete i.lastQuery;
+                    i.store.model.load(row.get(i.getName()), {
+                        success: function(record) {
+                            i.store.removeAll();
+                            i.store.add(record);
+                            i.setValue(row.get(i.getName()));
+                            i.resetOriginalValue();
+                            delete i.lastQuery;
+                        },
+                        scope: this
+                    });
                 }
             }, this);
             Ext.each(this.view.query('multiselectfield'), function(i) {
@@ -85,10 +94,6 @@ Ext.define('Densa.form.PanelController', {
                 }
             }, this);
         }
-
-        //when loading the same row (by comparing the id) keep dirty values
-        var keepDirtyValues = this.view.getForm()._record
-            && this.view.getForm()._record.getId() == row.getId();
 
         this.view.getForm()._record = row;
 
