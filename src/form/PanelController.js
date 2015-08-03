@@ -76,16 +76,27 @@ Ext.define('Densa.form.PanelController', {
                     return;
                 }
                 if (i.getName() != '' && !!row.get(i.getName()) && i.queryMode == 'remote' && i.store) {
-                    i.store.model.load(row.get(i.getName()), {
-                        success: function(record) {
-                            i.store.removeAll();
-                            i.store.add(record);
-                            i.setValue(row.get(i.getName()));
-                            i.resetOriginalValue();
-                            delete i.lastQuery;
-                        },
-                        scope: this
-                    });
+                    if (i.valueField == i.store.model.prototype.idProperty) {
+                        i.store.model.load(row.get(i.getName()), {
+                            success: function(record) {
+                                i.store.removeAll();
+                                i.store.add(record);
+                                i.setValue(row.get(i.getName()));
+                                i.resetOriginalValue();
+                                delete i.lastQuery;
+                            },
+                            scope: this
+                        });
+                    } else {
+                        i.store.addFilter({
+                            id: 'densaFormComboboxFilterId',
+                            property: i.valueField,
+                            value: row.get(i.getName())
+                        }, false);
+                        i.store.load();
+                        i.store.filters.removeAtKey('densaFormComboboxFilterId');
+                        delete i.lastQuery;
+                    }
                 }
             }, this);
             Ext.each(this.view.query('multiselectfield'), function(i) {
