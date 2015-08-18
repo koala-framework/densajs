@@ -9,5 +9,20 @@ Ext4.define('Densa.overrides.DataModel', {
         if (this.phantom && this.getId()) {
             this.internalId = this.getId();
         }
+    },
+
+    reloadData: function()
+    {
+        if (this.phantom) return false;
+
+        this.self.load(this.getId(), {
+            success: function(loadedRow) {
+                this.beginEdit();
+                this.set(loadedRow.getData());
+                this.endEdit();
+                this.commit();
+            },
+            scope: this
+        });
     }
 });

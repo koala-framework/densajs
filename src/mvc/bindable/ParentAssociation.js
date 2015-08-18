@@ -35,17 +35,7 @@ Ext.define('Densa.mvc.bindable.ParentAssociation', {
     _reloadLoadedRow: function()
     {
         var r = this.getLoadedRecord();
-        if (r && !r.phantom) {
-            r.self.load(r.getId(), {
-                success: function(loadedRow) {
-                    r.beginEdit();
-                    r.set(loadedRow.getData());
-                    r.endEdit();
-                    r.commit();
-                },
-                scope: this
-            });
-        }
+        if (r) r.reloadData();
     },
 
     load: function(row, store)
