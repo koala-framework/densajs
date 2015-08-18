@@ -81,6 +81,16 @@ Ext.define('Densa.editWindow.WindowController', {
                         key: Ext.EventObject.ENTER,
                         handler: function () {
                             if (this.view.isVisible()) {
+                                if (document.activeElement) {
+                                    var parentField = Ext.get(document.activeElement).findParent('.x4-field');
+                                    if (parentField) {
+                                        var activeField = Ext.getCmp(parentField.id);
+                                        if (activeField && activeField.forceSelection && activeField instanceof Ext.form.field.Trigger) {
+                                            activeField.triggerBlur();
+                                        }
+                                    }
+                                }
+
                                 this.onSaveClick();
                             }
                         },
