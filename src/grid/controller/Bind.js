@@ -73,7 +73,8 @@ Ext.define('Densa.grid.controller.Bind', {
         if (grid.getStore()) this.onBindStore(grid.getStore());
 
         this.bindable.on('savesuccess', function() {
-            this.gridController.view.getStore().reload();
+            var r = this.bindable.getLoadedRecord();
+            if (r) r.reloadData();
         }, this);
 
         if (this.addButton) {
