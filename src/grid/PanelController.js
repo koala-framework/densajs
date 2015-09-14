@@ -171,7 +171,11 @@ Ext.define('Densa.grid.PanelController', {
                 var columnNames = [];
                 Ext.each(this.view.columns, function(col) {
                     if (!col.dataIndex) return;
-                    columnNames.push(col.text);
+                    var columnName = col.text;
+                    if (col.exportText) {
+                        columnName = col.exportText;
+                    }
+                    columnNames.push(columnName);
                 }, this);
                 data.unshift(columnNames);
 
@@ -210,7 +214,11 @@ Ext.define('Densa.grid.PanelController', {
                 var sep = '';
                 Ext.each(this.view.columns, function(col) {
                     if (!col.dataIndex) return;
-                    csv += sep+col.text;
+                    var columnName = col.text;
+                    if (col.exportText) {
+                        columnName = col.exportText;
+                    }
+                    csv += sep+columnName;
                     sep = ';';
                 }, this);
                 csv += '\n';
