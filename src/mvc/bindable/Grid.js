@@ -34,9 +34,6 @@ Ext.define('Densa.mvc.bindable.Grid', {
         }
         this._loadedRecord = row;
         var store = row[this.relation]();
-        if (!store.lastOptions && !row.phantom) {
-            store.load();
-        }
 
         //if both model has HayMany assocication and child model has BelongsTo associacion
         //we set the child models the parent model instance wich they will use for getXxx
@@ -79,6 +76,10 @@ Ext.define('Densa.mvc.bindable.Grid', {
         }
 
         this.gridController.view.bindStore(store);
+        // loaded after bindStore to enable views to apply filters
+        if (!store.lastOptions && !row.phantom) {
+            store.load();
+        }
     },
 
     reset: function()
