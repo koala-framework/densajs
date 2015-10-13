@@ -77,9 +77,32 @@ Ext.define('Densa.mvc.bindable.Grid', {
 
         this.gridController.view.bindStore(store);
         // loaded after bindStore to enable views to apply filters
-        if (!store.lastOptions && !row.phantom) {
+        if (!row.phantom
+            && (!store.lastOptions
+                || !this._filtersArrayEqual(store.filters.items, store.lastOptions.filters)
+            )
+        ) {
             store.load();
         }
+    },
+
+    _filtersArrayEqual: function(filtersOne, filtersTwo)
+    {
+        if (filtersOne.length != filtersTwo.length) return false;
+        for (var i = 0; i < filtersOne.length; i++) {
+            var filterMatchedInSecondArray = false;
+            for (var a = 0; a < filtersTwo.length; a++) {
+                if (filtersOne[i].id == filtersTwo[a].id
+                    && filtersOne[i].property == filtersTwo[a].property
+                    && filtersOne[i].value == filtersTwo[a].value
+                ) {
+                    filterMatchedInSecondArray = true;
+                    break;
+                }
+            }
+            if (!filterMatchedInSecondArray) return false;
+        }
+        return true;
     },
 
     reset: function()
