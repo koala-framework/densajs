@@ -77,25 +77,41 @@ Ext.define('Densa.editWindow.WindowController', {
         this.view.on('show', function() {
             if (this._isBindableViewForm()) {
                 if (!this._saveKeyMap) {
-                    this._saveKeyMap = new Ext.util.KeyMap(Ext.getBody(), {
-                        key: Ext.EventObject.ENTER,
-                        handler: function () {
-                            if (this.view.isVisible()) {
-                                if (document.activeElement) {
-                                    var parentField = Ext.get(document.activeElement).findParent('.x4-field');
-                                    if (parentField) {
-                                        var activeField = Ext.getCmp(parentField.id);
-                                        if (activeField && activeField.forceSelection && activeField instanceof Ext.form.field.Trigger) {
-                                            activeField.triggerBlur();
-                                        }
-                                    }
-                                }
+                    this._saveKeyMap = new Ext.util.KeyMap({
+                        target: Ext.getBody(),
+                        binding: [{
+                            key: Ext.EventObject.ENTER,
+                            ctrl: true,
+                            fn: function (keyCode, e) {
+                                if (!this.view.isVisible()) return;
+                                if (!document.activeElement) return;
+                                var parentField = Ext.get(document.activeElement).findParent('.x4-field');
+                                if (!parentField) return;
+                                if (Ext.getCmp(parentField.id).xtype != 'textarea') return;
 
+                                e.stopEvent();
                                 this.onSaveClick();
-                            }
-                        },
-                        scope: this,
-                        defaultEventAction: 'stopEvent'
+                            },
+                            scope: this
+                        }, {
+                            key: Ext.EventObject.ENTER,
+                            ctrl: false,
+                            fn: function (keyCode, e) {
+                                if (!this.view.isVisible()) return;
+                                if (!document.activeElement) return;
+                                var parentField = Ext.get(document.activeElement).findParent('.x4-field');
+                                if (!parentField) return;
+                                var activeField = Ext.getCmp(parentField.id);
+                                if (activeField.xtype == 'textareafield') return;
+
+                                if (activeField.forceSelection && activeField instanceof Ext.form.field.Trigger) {
+                                    activeField.triggerBlur();
+                                }
+                                e.stopEvent();
+                                this.onSaveClick();
+                            },
+                            scope: this
+                        }]
                     });
                 }
                 if (!this._saveKeyMap.isEnabled()) this._saveKeyMap.enable();
