@@ -49,8 +49,8 @@ Ext.define('Densa.mvc.bindable.ViewController', {
         }
         if (this.getSaveButton) this.getSaveButton().disable();
         if (this.getDeleteButton) this.getDeleteButton().disable();
-        this.bindable.on('savesuccess', function() {
-            this.fireEvent('savesuccess');
+        this.bindable.on('savesuccess', function(type) {
+            this.fireEvent('savesuccess', type);
         }, this);
     },
 
@@ -180,8 +180,8 @@ Ext.define('Densa.mvc.bindable.ViewController', {
                     syncQueue.start({
                         success: function() {
                             submitDeferred.resolve();
-                            this.fireViewEvent('savesuccess');
-                            this.fireEvent('savesuccess');
+                            this.fireViewEvent('savesuccess', 'save');
+                            this.fireEvent('savesuccess', 'save');
                         },
                         failure: function() {
                             submitDeferred.reject();

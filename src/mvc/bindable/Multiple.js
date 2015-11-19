@@ -25,8 +25,8 @@ Ext.define('Densa.mvc.bindable.Multiple', {
         if (!item.isBindableController) {
             Ext.Error.raise('item is not a bindableController');
         }
-        item.on('savesuccess', function() {
-            this.fireEvent('savesuccess');
+        item.on('savesuccess', function(type) {
+            this.fireEvent('savesuccess', type);
         }, this);
 
         this.items.push(item);

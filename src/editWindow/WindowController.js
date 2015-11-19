@@ -118,9 +118,9 @@ Ext.define('Densa.editWindow.WindowController', {
             }
         }, this);
 
-        this.bindable.on('savesuccess', function() {
-            this.fireViewEvent('savesuccess');
-            this.fireEvent('savesuccess');
+        this.bindable.on('savesuccess', function(type) {
+            this.fireViewEvent('savesuccess', type);
+            this.fireEvent('savesuccess', type);
         }, this);
     },
 
@@ -166,8 +166,8 @@ Ext.define('Densa.editWindow.WindowController', {
                                                         //bindable forms can still update the row as the sync is not yet started
                         syncQueue.start({
                             success: function() {
-                                this.fireViewEvent('savesuccess');
-                                this.fireEvent('savesuccess');
+                                this.fireViewEvent('savesuccess', 'save');
+                                this.fireEvent('savesuccess', 'save');
                             },
                             scope: this
                         });
@@ -176,8 +176,8 @@ Ext.define('Densa.editWindow.WindowController', {
                         this.bindable.getLoadedRecord().save({
                             callback: function(records, operation, success) {
                                 if (!success) return;
-                                this.fireViewEvent('savesuccess');
-                                this.fireEvent('savesuccess');
+                                this.fireViewEvent('savesuccess', 'save');
+                                this.fireEvent('savesuccess', 'save');
                             },
                             scope: this
                         });

@@ -67,8 +67,8 @@ Ext.define('Densa.grid.controller.EditWindow', {
                 this._removePhantomOnCancel = true;
             }, this);
         }
-        this.editWindow.on('savesuccess', function() {
-            this.grid.fireEvent('savesuccess');
+        this.editWindow.on('savesuccess', function(type) {
+            this.grid.fireEvent('savesuccess', type);
             this.gridController.view.getStore().reload();
         }, this);
         this.editWindow.on('save', function () {

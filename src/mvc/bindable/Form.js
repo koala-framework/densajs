@@ -16,8 +16,8 @@ Ext.define('Densa.mvc.bindable.Form', {
         }
         if (!this.formController) Ext.Error.raise('formController config is required');
         if (!(this.formController instanceof Densa.form.PanelController)) Ext.Error.raise('formController config needs to be a Densa.form.PanelController');
-        this.formController.view.on('savesuccess', function() {
-            this.fireEvent('savesuccess');
+        this.formController.view.on('savesuccess', function(type) {
+            this.fireEvent('savesuccess', type);
         }, this);
     },
 

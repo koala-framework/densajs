@@ -115,8 +115,8 @@ Ext.define('Densa.grid.PanelController', {
         if (this.autoSync) {
             this.view.getStore().sync({
                 success: function() {
-                    this.fireViewEvent('savesuccess');
-                    this.fireEvent('savesuccess');
+                    this.fireViewEvent('savesuccess', 'delete');
+                    this.fireEvent('savesuccess', 'delete');
                 },
                 scope: this
             });
