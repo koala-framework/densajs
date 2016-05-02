@@ -7,6 +7,7 @@ Ext.define('Densa.grid.controller.Bind', {
     saveChangesTitle: 'Save',
     saveChangesMsg: 'Do you want to save the changes?',
 
+    addSorted: false,
 
     gridController: null,
     bindable: null,
@@ -83,7 +84,11 @@ Ext.define('Densa.grid.controller.Bind', {
                     success: function() {
                         var s = grid.getStore();
                         var row = s.model.create();
-                        s.add(row);
+                        if (this.addSorted) {
+                            s.addSorted(row);
+                        } else {
+                            s.add(row);
+                        }
                         //this.bindable.view.fireEvent('add', row);
                         grid.getSelectionModel().select(row);
                         bindable.onAdd(row);
