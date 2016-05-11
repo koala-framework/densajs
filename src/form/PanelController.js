@@ -1,5 +1,8 @@
 Ext.define('Densa.form.PanelController', {
     extend: 'Densa.mvc.ViewController',
+    requires: [
+        'Deft.promise.Deferred'
+    ],
 
     mixins: {
         bindable: 'Densa.mvc.bindable.Interface'
@@ -15,6 +18,7 @@ Ext.define('Densa.form.PanelController', {
     saveValidateErrorTitle: 'Save',
     saveValidateErrorMsg: "Can't save, please fill all red underlined fields correctly.",
     validatingMaskText: 'Validating...',
+    remoteValidation: false,
 
     optionalControl: {
 
@@ -231,7 +235,38 @@ Ext.define('Densa.form.PanelController', {
 
     isValid: function()
     {
-        return this.view.getForm().isValid();
+        var isValid = this.view.getForm().isValid();
+        if (!isValid || !this.remoteValidation) {
+            return isValid;
+        }
+
+        var validationUrl = this.getLoadedRecord().getProxy().url + '/' + this.getLoadedRecord().get('id');
+        if (this.getLoadedRecord().phantom) {
+            validationUrl += '/action/validate-insert';
+        } else {
+            validationUrl += '/action/validate-update';
+        }
+        var deferred = new Deft.promise.Deferred();
+        Ext.Ajax.request({
+            url: validationUrl,
+            params: this.getValuesForRemoteValidation(),
+            success: function(response) {
+                var result = Ext.JSON.decode(response.responseText);
+                if (result.success) {
+                    deferred.resolve();
+                } else {
+                    deferred.reject({
+                        msg: result.error
+                    });
+                }
+            },
+            scope: this
+        });
+        return deferred.promise;
+    },
+
+    getValuesForRemoteValidation: function() {
+        return this.view.getForm().getValues();
     },
 
     enable: function()
