@@ -141,7 +141,19 @@ Ext.define('Densa.form.PanelController', {
                     }
                 } else {
                     if (this.autoSync) {
-                        this.validateAndSubmit();
+                        this.save();
+
+                        this.getLoadedRecord().save({
+                            success: function() {
+                                this.fireViewEvent('savesuccess', 'save', this.getLoadedRecord());
+                                this.fireEvent('savesuccess', 'save', this.getLoadedRecord());
+                                if (!this._loadedStore) {
+                                    //if we don't have a store we can't listen to 'write' event
+                                    this.load(this.getLoadedRecord());
+                                }
+                            },
+                            scope: this
+                        });
                     } else {
                         Ext.Error.raise("Can't save if autoSync is disabled and store was not provided");
                     }
@@ -180,37 +192,6 @@ Ext.define('Densa.form.PanelController', {
                         Ext.Error.raise("Can't delete if autoSync is disabled and store was not provided");
                     }
                 }
-            },
-            scope: this
-        });
-    },
-
-    validateAndSubmit: function(options)
-    {
-        return this.allowSave().then({
-            success: function() {
-
-                this.save();
-
-                this.getLoadedRecord().save({
-                    success: function() {
-                        this.fireViewEvent('savesuccess', 'save', this.getLoadedRecord());
-                        this.fireEvent('savesuccess', 'save', this.getLoadedRecord());
-                        if (!this._loadedStore) {
-                            //if we don't have a store we can't listen to 'write' event
-                            this.load(this.getLoadedRecord());
-                        }
-                        if (options && options.success) {
-                            options.success.call(options.scope || this);
-                        }
-                    },
-                    failure: function() {
-                        if (options && options.failure) {
-                            options.failure.call(options.scope || this);
-                        }
-                    },
-                    scope: this
-                });
             },
             scope: this
         });
