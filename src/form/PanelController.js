@@ -1,5 +1,8 @@
 Ext.define('Densa.form.PanelController', {
     extend: 'Densa.mvc.ViewController',
+    requires: [
+        'Deft.promise.Deferred'
+    ],
 
     mixins: {
         bindable: 'Densa.mvc.bindable.Interface'
@@ -15,6 +18,7 @@ Ext.define('Densa.form.PanelController', {
     saveValidateErrorTitle: 'Save',
     saveValidateErrorMsg: "Can't save, please fill all red underlined fields correctly.",
     validatingMaskText: 'Validating...',
+    remoteValidation: false,
 
     optionalControl: {
 
@@ -141,7 +145,19 @@ Ext.define('Densa.form.PanelController', {
                     }
                 } else {
                     if (this.autoSync) {
-                        this.validateAndSubmit();
+                        this.save();
+
+                        this.getLoadedRecord().save({
+                            success: function() {
+                                this.fireViewEvent('savesuccess', 'save', this.getLoadedRecord());
+                                this.fireEvent('savesuccess', 'save', this.getLoadedRecord());
+                                if (!this._loadedStore) {
+                                    //if we don't have a store we can't listen to 'write' event
+                                    this.load(this.getLoadedRecord());
+                                }
+                            },
+                            scope: this
+                        });
                     } else {
                         Ext.Error.raise("Can't save if autoSync is disabled and store was not provided");
                     }
@@ -185,37 +201,6 @@ Ext.define('Densa.form.PanelController', {
         });
     },
 
-    validateAndSubmit: function(options)
-    {
-        return this.allowSave().then({
-            success: function() {
-
-                this.save();
-
-                this.getLoadedRecord().save({
-                    success: function() {
-                        this.fireViewEvent('savesuccess', 'save', this.getLoadedRecord());
-                        this.fireEvent('savesuccess', 'save', this.getLoadedRecord());
-                        if (!this._loadedStore) {
-                            //if we don't have a store we can't listen to 'write' event
-                            this.load(this.getLoadedRecord());
-                        }
-                        if (options && options.success) {
-                            options.success.call(options.scope || this);
-                        }
-                    },
-                    failure: function() {
-                        if (options && options.failure) {
-                            options.failure.call(options.scope || this);
-                        }
-                    },
-                    scope: this
-                });
-            },
-            scope: this
-        });
-    },
-
     save: function(syncQueue)
     {
         if (!this.view.getRecord()) return;
@@ -250,7 +235,38 @@ Ext.define('Densa.form.PanelController', {
 
     isValid: function()
     {
-        return this.view.getForm().isValid();
+        var isValid = this.view.getForm().isValid();
+        if (!isValid || !this.remoteValidation) {
+            return isValid;
+        }
+
+        var validationUrl = this.getLoadedRecord().getProxy().url + '/' + this.getLoadedRecord().get('id');
+        if (this.getLoadedRecord().phantom) {
+            validationUrl += '/action/validate-insert';
+        } else {
+            validationUrl += '/action/validate-update';
+        }
+        var deferred = new Deft.promise.Deferred();
+        Ext.Ajax.request({
+            url: validationUrl,
+            params: this.getValuesForRemoteValidation(),
+            success: function(response) {
+                var result = Ext.JSON.decode(response.responseText);
+                if (result.success) {
+                    deferred.resolve();
+                } else {
+                    deferred.reject({
+                        msg: result.error
+                    });
+                }
+            },
+            scope: this
+        });
+        return deferred.promise;
+    },
+
+    getValuesForRemoteValidation: function() {
+        return this.view.getForm().getValues();
     },
 
     enable: function()
