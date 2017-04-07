@@ -65,6 +65,7 @@ Ext.define('Densa.grid.PanelController', {
             }
 
             field.on(eventName, function() {
+                if (!field.isValid()) return;
                 var filterId = 'filter-'+field.getName();
                 var v = field.getValue();
                 var filter = this.view.getStore().filters.get(filterId);
