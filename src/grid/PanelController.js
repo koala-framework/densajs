@@ -244,6 +244,8 @@ Ext.define('Densa.grid.PanelController', {
             model: this._store.model,
             filters: this._store.filters.items,
             sorters: this._store.sorters.items,
+            remoteFilter: this._store.remoteFilter,
+            remoteSort: this._store.remoteSort,
             pageSize: 250
         });
 
