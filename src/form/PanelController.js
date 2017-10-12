@@ -181,7 +181,13 @@ Ext.define('Densa.form.PanelController', {
                             if (button == 'yes') {
                                 if (this._loadedStore) {
                                     this._loadedStore.remove(this.getLoadedRecord());
-                                    this._loadedStore.sync();
+                                    this._loadedStore.sync({
+                                        success: function () {
+                                            this.fireViewEvent('deletesuccess', 'delete');
+                                            this.fireEvent('deletesuccess', 'delete');
+                                        },
+                                        scope: this
+                                    });
                                 } else {
                                     this.getLoadedRecord().destroy();
                                     this.disable();
@@ -192,6 +198,9 @@ Ext.define('Densa.form.PanelController', {
                 } else {
                     if (this._loadedStore) {
                         this._loadedStore.remove(this.getLoadedRecord());
+
+                        this.fireViewEvent('deletesuccess', 'delete');
+                        this.fireEvent('deletesuccess', 'delete');
                     } else {
                         Ext.Error.raise("Can't delete if autoSync is disabled and store was not provided");
                     }
