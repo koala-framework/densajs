@@ -2,7 +2,12 @@ Ext.define('Densa.grid.controller.InlineEditing', {
     mixins: {
         observable: 'Ext.util.Observable'
     },
+    indexOfEditColumn: 0,
+
     constructor: function(config) {
+        if (config.indexOfEditColumn) {
+            this.indexOfEditColumn = config.indexOfEditColumn;
+        }
         this.mixins.observable.constructor.call(this, config);
         this.init();
     },
@@ -30,7 +35,7 @@ Ext.define('Densa.grid.controller.InlineEditing', {
                 s.add(row);
                 this.fireEvent('add', row);
                 grid.getSelectionModel().select(row);
-                grid.getPlugin('cellediting').startEdit(row, 0);
+                grid.getPlugin('cellediting').startEdit(row, this.indexOfEditColumn);
             }, this);
         }
 
