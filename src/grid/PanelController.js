@@ -156,11 +156,14 @@ Ext.define('Densa.grid.PanelController', {
                     if (!col.dataIndex) return;
                     var val = row.get(col.dataIndex);
                     if (col.exportRenderer) {
-                        val = Ext4.util.Format.stripTags(col.exportRenderer(val, col, row));
+                        val = col.exportRenderer(val, col, row);
                     } else if (col.renderer) {
-                        val = Ext4.util.Format.stripTags(col.renderer(val, col, row));
+                        val = col.renderer(val, col, row);
                     }
-                    if (!val) val = '';
+                    if (typeof val !== 'number') {
+                        val = Ext4.util.Format.stripTags(val);
+                        if (!val) val = '';
+                    }
                     excelRow.push(val);
                 }, this);
                 return excelRow;
