@@ -297,6 +297,7 @@ Ext.define('Densa.grid.PanelController', {
                 var a = this.view.el.createChild({
                     tag: 'a',
                     href: blobURL,
+                    type: config.mimeType,
                     style: 'display:none;',
                     download: config.filename
                 });
