@@ -131,7 +131,7 @@ Ext.define('Densa.grid.PanelController', {
         this._store = s;
         Ext.each(this.view.query('pagingtoolbar'), function(i) {
             i.bindStore(s);
-            if (!s.isLoading()) i.updateInfo();
+            if (!s.isLoading()) i.onLoad();
         }, this);
         Ext.each(this.view.query('> toolbar[dock=top] field'), function(field) {
             var filterId = 'filter-'+field.getName();
