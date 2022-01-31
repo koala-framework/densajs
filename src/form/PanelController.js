@@ -191,6 +191,8 @@ Ext.define('Densa.form.PanelController', {
                                 } else {
                                     this.getLoadedRecord().destroy();
                                     this.disable();
+                                    this.fireViewEvent('deletesuccess', 'delete');
+                                    this.fireEvent('deletesuccess', 'delete');
                                 }
                             }
                         }
